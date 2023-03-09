@@ -2,11 +2,13 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.9'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'war'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+apply plugin:'war'
 
 configurations {
 	compileOnly {
@@ -30,4 +32,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+war {
+	archiveName("mine.war")
 }
