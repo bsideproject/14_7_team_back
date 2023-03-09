@@ -1,4 +1,4 @@
-package com.config;
+package com.example.mineservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
