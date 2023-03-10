@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mine</title>
+</head>
+
+<style>
+    @font-face {
+        font-family: 'LINESeedKR-Bd';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 100%, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translateZ(0);
+        }
+    }
+
+    body {
+        font-family: 'LINESeedKR-Bd', serif;
+        background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+    }
+
+    .content_wrap {
+        position: absolute;
+        top: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .title {
+        font-size: 100px;
+        text-align: center;
+    }
+
+    .content {
+        font-size: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color:transparent;
+        -webkit-background-clip: text;
+        animation: fadeInUp 2s;
+    }
+</style>
+
+<body>
+
+<div class="content_wrap">
+    <p class="title">Mine</p>
+    <p class="content">Coming soon...</p>
+</div>
+
+
+</body>
+</html>

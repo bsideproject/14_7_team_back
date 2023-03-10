@@ -1,4 +1,4 @@
-package com.example.mineservice;
+package com.example.mineservice.controller;
 
 import com.example.mineservice.config.NaverConfig;
 import io.swagger.annotations.Api;
