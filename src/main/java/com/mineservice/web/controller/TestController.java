@@ -1,6 +1,6 @@
-package com.example.mineservice.controller;
+package com.mineservice.web.controller;
 
-import com.example.mineservice.config.NaverConfig;
+import com.mineservice.config.NaverConfig;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

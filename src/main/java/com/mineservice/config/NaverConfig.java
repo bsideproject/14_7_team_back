@@ -1,4 +1,4 @@
-package com.example.mineservice.config;
+package com.mineservice.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
