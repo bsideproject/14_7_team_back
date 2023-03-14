@@ -2,7 +2,8 @@ package com.mineservice.domain.article.api;
 
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,24 +12,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@Slf4j
 public class ArticleController {
 
     public static List<ArticleReqDTO> dummyList = new ArrayList<>();
 
-    @PostMapping("/article")
-    @ApiOperation(value = "링크 게시글 저장 API")
-    public ResponseEntity<String> registerArticle(@RequestBody ArticleReqDTO reqDTO) {
+    @PostMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "아티클 저장")
+    public ResponseEntity<String> registerArticle(@ModelAttribute ArticleReqDTO reqDTO) {
+        log.info("requestDTO :{}", reqDTO.toString());
+        log.info("imgOrgName :{}", reqDTO.getImg().getOriginalFilename());
 
+        // TODO: 2023-03-14(014) image 핸들링
         dummyList.add(reqDTO);
 
-        return new ResponseEntity<>("ok", HttpStatus.OK);
+        return ResponseEntity.ok("success");
     }
 
-
     @GetMapping("/article")
-    public ResponseEntity<List<ArticleReqDTO>> getArticles() {
-
-        return ResponseEntity.ok(dummyList);
+    @ApiOperation(value = "아티클 불러오기")
+    public ResponseEntity<String> getArticles() {
+        log.info("responseBody :{}", dummyList.toString());
+        return ResponseEntity.ok(dummyList.toString());
     }
 
 
