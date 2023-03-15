@@ -1,11 +1,10 @@
 package com.mineservice.domain.article.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,8 +28,8 @@ public class ArticleReqDTO {
     @ApiModelProperty(notes = "태그리스트", example = "[태그1, 태그2]")
     private List<String> tags;
 
-    @ApiModelProperty(notes = "알람시각")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(notes = "알람시각", example = "2023-03-15 10:30")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime alarmTime;
 
 }
