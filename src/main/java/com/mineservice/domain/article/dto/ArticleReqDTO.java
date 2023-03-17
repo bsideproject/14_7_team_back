@@ -2,6 +2,7 @@ package com.mineservice.domain.article.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -23,13 +25,14 @@ public class ArticleReqDTO {
     @ApiModelProperty(notes = "링크", example = "https://www.naver.com")
     private String url;
 
+    @ApiModelProperty(notes = "이미지", example = "image.png")
     private MultipartFile img;
 
     @ApiModelProperty(notes = "태그리스트", example = "[태그1, 태그2]")
-    private List<String> tags;
+    private List<String> tags = new ArrayList<>();
 
-    @ApiModelProperty(notes = "알람시각", example = "2023-03-15 10:30")
+    @ApiModelProperty(notes = "알람시각(yyyy-MM-dd HH:mm)", example = "2023-03-15 10:30")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime alarmTime;
+    private LocalDateTime alarmTime = null;
 
 }

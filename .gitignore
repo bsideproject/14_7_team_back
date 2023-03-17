@@ -39,3 +39,4 @@ out/
 
 ### KEY ###
 application-private-key.properties
+src/main/resources/application-private-key.properties
