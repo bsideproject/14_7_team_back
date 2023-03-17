@@ -1,4 +1,4 @@
-package com.example.mineservice;
+package com.mineservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,6 +1,6 @@
 package com.mineservice.web.controller;
 
-import com.mineservice.config.NaverConfig;
+import com.mineservice.global.config.ObjectStorageConfig;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -16,20 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TestController {
 
-    private final NaverConfig naverConfig;
+    private final ObjectStorageConfig objectStorageConfig;
 
     @GetMapping("/test")
     @ApiOperation(value = "테스트 API 입니다")
     public String test() {
         return "server started";
     }
-
-    @GetMapping("/naver-key")
-    @ApiOperation(value = "네이버 키 가져오기")
-    public ResponseEntity<String> naverKey() {
-        return new ResponseEntity<>(naverConfig.getNaverKey(), HttpStatus.OK);
-    }
-
 
     @GetMapping("/404")
     public ResponseEntity<String> notFound() {
