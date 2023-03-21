@@ -1,5 +1,6 @@
 package com.mineservice.domain.article.api;
 
+import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.domain.Article;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.repository.ArticleRepository;
@@ -27,8 +28,7 @@ import java.util.stream.Collectors;
 public class ArticleController {
 
     public static List<ArticleReqDTO> dummyList = new ArrayList<>();
-    private final ArticleRepository articleRepository;
-    private final TagRepository tagRepository;
+    private final ArticleService articleService;
     private final ResponseService responseService;
 
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -37,25 +37,7 @@ public class ArticleController {
         log.info("requestDTO :{}", reqDTO.toString());
         log.info("imgOrgName :{}", reqDTO.getImg().isEmpty() ? null : reqDTO.getImg().getOriginalFilename());
 
-
-        Article article = articleRepository.save(Article.builder()
-                .title(reqDTO.getTitle())
-                .type("") // todo : type
-                .url(reqDTO.getUrl())
-                .build());
-
-        log.info("save article :{}", article.toString());
-
-        List<Tag> tagList = tagRepository.saveAll(reqDTO.getTags().stream()
-                .map(tag -> Tag.builder()
-                        .userId("") // todo : userId
-                        .name(tag)
-                        .createBy("") // todo : createBy
-                        .createDt(LocalDateTime.now())
-                        .build())
-                .collect(Collectors.toList()));
-
-        log.info("save all tagList :{}", tagList.toString());
+        articleService.createArticle("", reqDTO);
 
         dummyList.add(reqDTO);
 

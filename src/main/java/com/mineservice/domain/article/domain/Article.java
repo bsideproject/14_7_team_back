@@ -1,22 +1,26 @@
 package com.mineservice.domain.article.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import com.mineservice.domain.article_tag.domain.ArticleTag;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
-@Builder
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Article {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id")
+    @Column(name = "user_id")
     private String userId;
 
     private String title;
@@ -45,7 +49,21 @@ public class Article {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
-    public Article() {
+    @OneToMany(mappedBy = "article")
+    List<ArticleTag> articleTags = new ArrayList<>();
 
+    @Builder
+    protected Article(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
+        this.userId = userId;
+        this.title = title;
+        this.type = type;
+        this.url = url;
+        this.favorite = favorite;
+        this.readYn = "N";
+        this.useYn = "Y";
+        this.modifyBy = modifyBy;
+        this.modifyDt = modifyDt;
+        this.createBy = createBy;
+        this.createDt = LocalDateTime.now();
     }
 }
