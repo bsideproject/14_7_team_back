@@ -53,7 +53,7 @@ public class Article {
     List<ArticleTag> articleTags = new ArrayList<>();
 
     @Builder
-    protected Article(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
+    public Article(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
         this.userId = userId;
         this.title = title;
         this.type = type;

@@ -1,5 +1,6 @@
 package com.mineservice.global.common.response;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,13 @@ public class ResponseService {
 
     public <T> ListResponse<T> getListResponse(List<T> list) {
         ListResponse<T> response = new ListResponse<>();
+        response.setList(list);
+        setSuccessResponse(response);
+        return response;
+    }
+
+    public <T> PageResponse<T> getPageResponse(Page<T> list) {
+        PageResponse<T> response = new PageResponse<>();
         response.setList(list);
         setSuccessResponse(response);
         return response;

@@ -2,7 +2,6 @@ package com.mineservice.domain.article.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,4 +34,14 @@ public class ArticleReqDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime alarmTime = null;
 
+
+    public String getType() {
+        if (url == null) {
+            return "image";
+        } else if (url.contains("youtube")) {
+            return "youtube";
+        } else {
+            return "link";
+        }
+    }
 }
