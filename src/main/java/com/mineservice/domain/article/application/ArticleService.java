@@ -58,7 +58,10 @@ public class ArticleService {
 
     }
 
-
+    public void deleteArticle(Long articleId) {
+        articleTagRepository.deleteByArticleId(articleId);
+        articleRepository.deleteById(articleId);
+    }
 
 
 }

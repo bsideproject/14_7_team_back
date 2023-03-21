@@ -29,7 +29,7 @@ public class Tag {
     private String createBy;
 
     @Column(name = "create_dt")
-    private LocalDateTime createDt = LocalDateTime.now();
+    private LocalDateTime createDt;
 
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags = new ArrayList<>();
@@ -39,5 +39,6 @@ public class Tag {
         this.userId = userId;
         this.name = name;
         this.createBy = createBy;
+        this.createDt = LocalDateTime.now();
     }
 }

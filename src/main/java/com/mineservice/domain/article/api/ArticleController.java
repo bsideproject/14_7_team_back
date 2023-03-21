@@ -37,7 +37,7 @@ public class ArticleController {
         log.info("requestDTO :{}", reqDTO.toString());
         log.info("imgOrgName :{}", reqDTO.getImg().isEmpty() ? null : reqDTO.getImg().getOriginalFilename());
 
-        articleService.createArticle("", reqDTO);
+        articleService.createArticle("TEST", reqDTO);
 
         dummyList.add(reqDTO);
 
@@ -57,6 +57,8 @@ public class ArticleController {
     @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "long", paramType = "path", example = "1")
     public CommonResponse deleteArticle(@PathVariable Long id) {
         log.info("deleteArticle id :{}", id);
+
+        articleService.deleteArticle(id);
 
         return responseService.getSuccessResponse();
     }
