@@ -1,6 +1,9 @@
 package com.mineservice.domain.article.domain;
 
 import com.mineservice.domain.article_tag.domain.ArticleTag;
+import com.mineservice.domain.file_info.domain.FileInfo;
+import com.mineservice.domain.user.domain.UserAlarm;
+import com.mineservice.domain.user.domain.UserInfo;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -49,11 +52,23 @@ public class Article {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
+    @ManyToOne
+    @JoinColumn(name = "user_info_id")
+    private UserInfo userInfo;
+
     @OneToMany(mappedBy = "article")
-    List<ArticleTag> articleTags = new ArrayList<>();
+    List<ArticleTag> articleTags;
+
+    @OneToMany
+    @JoinColumn(name = "article_id")
+    private List<FileInfo> fileInfos;
+
+    @OneToOne
+    @JoinColumn(name = "article_id")
+    private ArticleAlarm articleAlarm;
 
     @Builder
-    public Article(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
+    protected Article(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
         this.userId = userId;
         this.title = title;
         this.type = type;
