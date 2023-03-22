@@ -53,18 +53,18 @@ public class Article {
     private LocalDateTime createDt;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id")
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags;
 
     @OneToMany
-    @JoinColumn(name = "article_id")
+    @JoinColumn(name = "id")
     private List<FileInfo> fileInfos;
 
     @OneToOne
-    @JoinColumn(name = "article_id")
+    @JoinColumn(name = "id")
     private ArticleAlarm articleAlarm;
 
     @Builder
