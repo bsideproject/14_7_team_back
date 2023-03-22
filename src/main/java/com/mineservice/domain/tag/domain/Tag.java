@@ -36,10 +36,6 @@ public class Tag {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserInfo userInfo;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserInfo userInfo;
-
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags;
 
