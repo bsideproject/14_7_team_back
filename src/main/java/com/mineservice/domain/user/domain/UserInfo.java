@@ -6,7 +6,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -46,19 +45,19 @@ public class UserInfo {
     private LocalDateTime createDt;
 
     @OneToMany
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "id")
     private List<Article> articles;
 
     @OneToOne
-    @JoinColumn(name = "user_info_id", insertable = false, updatable = false)
+    @JoinColumn(name = "id")
     private UserAlarm userAlarm;
 
     @OneToOne
-    @JoinColumn(name = "user_info_id", insertable = false, updatable = false)
+    @JoinColumn(name = "id")
     private AccessToken accessToken;
 
     @OneToOne
-    @JoinColumn(name = "user_info_id", insertable = false, updatable = false)
+    @JoinColumn(name = "id")
     private RefreshToken refreshToken;
 
     @Builder

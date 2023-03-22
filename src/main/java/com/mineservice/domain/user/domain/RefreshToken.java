@@ -36,7 +36,7 @@ public class RefreshToken {
     private LocalDateTime createDt;
 
     @OneToOne
-    @JoinColumn(name = "user_info_id")
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserInfo userInfo;
 
 }
