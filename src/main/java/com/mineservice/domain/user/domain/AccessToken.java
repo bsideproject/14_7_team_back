@@ -35,8 +35,4 @@ public class AccessToken {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserInfo userInfo;
-
 }

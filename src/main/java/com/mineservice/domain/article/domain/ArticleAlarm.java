@@ -17,7 +17,7 @@ public class ArticleAlarm {
 
     @Id
     @Column(name = "article_id")
-    private String articleId;
+    private Long articleId;
 
     private LocalTime time;
 
@@ -32,9 +32,5 @@ public class ArticleAlarm {
 
     @Column(name = "create_dt")
     private LocalDateTime createDt;
-
-    @OneToOne
-    @JoinColumn(name = "article_id")
-    private Article article;
 
 }

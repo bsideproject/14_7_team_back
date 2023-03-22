@@ -34,14 +34,4 @@ public class ArticleReqDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime alarmTime = null;
 
-
-    public String getType() {
-        if (url == null) {
-            return "image";
-        } else if (url.contains("youtube")) {
-            return "youtube";
-        } else {
-            return "link";
-        }
-    }
 }
