@@ -22,7 +22,7 @@ public class ArticleReqDTO {
     private String title;
 
     @ApiModelProperty(notes = "링크", example = "https://www.naver.com")
-    private String url;
+    private String url = null;
 
     @ApiModelProperty(notes = "이미지", example = "image.png")
     private MultipartFile img;

@@ -1,9 +1,6 @@
 package com.mineservice.domain.article.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +16,7 @@ public class ArticleAlarm {
     @Column(name = "article_id")
     private Long articleId;
 
-    private LocalTime time;
+    private LocalDateTime time;
 
     @Column(name = "modify_by")
     private String modifyBy;
@@ -33,4 +30,11 @@ public class ArticleAlarm {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
+    @Builder
+    public ArticleAlarm(Long articleId, LocalDateTime time, String createBy, LocalDateTime createDt) {
+        this.articleId = articleId;
+        this.time = time;
+        this.createBy = createBy;
+        this.createDt = createDt;
+    }
 }

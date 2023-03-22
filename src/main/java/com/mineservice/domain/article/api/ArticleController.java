@@ -47,7 +47,7 @@ public class ArticleController {
         PageRequest pageRequest = PageRequest.of(page, 10);
         pageRequest.withSort(Sort.Direction.ASC, "id");
 
-        String userId = "TEST";
+        String userId = "TEST"; // todo 테스트 후 삭제해야함
 
         ArticleResDTO articleList = articleService.findAllArticlesByUserId(userId, pageRequest);
 

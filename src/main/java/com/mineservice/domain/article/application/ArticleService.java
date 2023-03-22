@@ -1,14 +1,16 @@
 package com.mineservice.domain.article.application;
 
 import com.mineservice.domain.article.domain.Article;
+import com.mineservice.domain.article.domain.ArticleAlarm;
 import com.mineservice.domain.article.dto.ArticleDTO;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
+import com.mineservice.domain.article.repository.ArticleAlarmRepository;
 import com.mineservice.domain.article.repository.ArticleRepository;
 import com.mineservice.domain.article_tag.domain.ArticleTag;
 import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
+import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.tag.domain.Tag;
-import com.mineservice.domain.tag.repository.TagRepository;
 import com.mineservice.domain.user.domain.UserInfo;
 import com.mineservice.domain.user.repository.UserInfoRepository;
 import lombok.AllArgsConstructor;
@@ -18,9 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,10 +30,10 @@ import java.util.Optional;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
     private final ArticleTagRepository articleTagRepository;
-
     private final UserInfoRepository userInfoRepository;
+    private final ArticleAlarmRepository articleAlarmRepository;
 
     @Transactional
     public UserInfo createUserInfo(String userId) {
@@ -53,19 +55,7 @@ public class ArticleService {
 
         List<ArticleTag> articleTagList = new ArrayList<>();
         for (String tagName : articleReqDTO.getTags()) {
-            Optional<Tag> findByName = tagRepository.findByUserIdAndName(userId, tagName);
-            Tag tag;
-            if (findByName.isEmpty()) {
-                tag = Tag.builder()
-                        .userId(userId)
-                        .name(tagName)
-                        .createBy(userId)
-                        .build();
-                tagRepository.save(tag);
-            } else {
-                tag = findByName.get();
-            }
-
+            Tag tag = tagService.createTagByArticle(userId, tagName);
             articleTagList.add(ArticleTag.builder()
                     .article(article)
                     .tag(tag)
@@ -74,9 +64,20 @@ public class ArticleService {
 
         // file upload
 
-        // if alarm is on, create alarm
+        if (articleReqDTO.getAlarmTime() != null) {
+            createArticleAlarm(article.getId(), articleReqDTO.getAlarmTime());
+        }
 
         articleTagRepository.saveAll(articleTagList);
+    }
+
+    @Transactional
+    public void createArticleAlarm(Long articleId, LocalDateTime alarmTime) {
+        ArticleAlarm articleAlarm = ArticleAlarm.builder()
+                .articleId(articleId)
+                .time(alarmTime)
+                .build();
+        articleAlarmRepository.save(articleAlarm);
     }
 
     public ArticleResDTO findAllArticlesByUserId(String userId, Pageable pageable) {
