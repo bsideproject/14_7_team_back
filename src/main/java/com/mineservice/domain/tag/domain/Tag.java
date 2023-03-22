@@ -1,6 +1,7 @@
 package com.mineservice.domain.tag.domain;
 
 import com.mineservice.domain.article_tag.domain.ArticleTag;
+import com.mineservice.domain.user.domain.UserInfo;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -30,6 +31,10 @@ public class Tag {
 
     @Column(name = "create_dt")
     private LocalDateTime createDt = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private UserInfo userInfo;
 
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags;

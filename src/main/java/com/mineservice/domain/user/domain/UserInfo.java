@@ -1,6 +1,7 @@
 package com.mineservice.domain.user.domain;
 
 import com.mineservice.domain.article.domain.Article;
+import com.mineservice.domain.tag.domain.Tag;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
+@Table(name = "user_info")
 public class UserInfo {
 
     @Id
@@ -44,9 +46,11 @@ public class UserInfo {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
-    @OneToMany
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "userInfo")
     private List<Article> articles;
+
+    @OneToMany(mappedBy = "userInfo")
+    private List<Tag> tags;
 
     @OneToOne
     @JoinColumn(name = "id")

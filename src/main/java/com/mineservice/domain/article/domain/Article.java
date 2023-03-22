@@ -59,8 +59,7 @@ public class Article {
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags;
 
-    @OneToMany
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "article")
     private List<FileInfo> fileInfos;
 
     @OneToOne
