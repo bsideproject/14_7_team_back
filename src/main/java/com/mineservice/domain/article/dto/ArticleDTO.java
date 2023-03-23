@@ -10,5 +10,6 @@ public class ArticleDTO {
     private Long articleId;
     private String title;
     private String type;
+    private String favorite;
 
 }

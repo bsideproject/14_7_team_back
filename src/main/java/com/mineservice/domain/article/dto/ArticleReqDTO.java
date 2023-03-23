@@ -27,6 +27,9 @@ public class ArticleReqDTO {
     @ApiModelProperty(notes = "이미지", example = "image.png")
     private MultipartFile img;
 
+    @ApiModelProperty(notes = "즐겨찾기(Y/N)", example = "Y")
+    private String favorite = "N";
+
     @ApiModelProperty(notes = "태그리스트", example = "[태그1, 태그2]")
     private List<String> tags = new ArrayList<>();
 

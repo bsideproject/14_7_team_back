@@ -51,6 +51,7 @@ public class ArticleService {
                 .title(articleReqDTO.getTitle())
                 .type(getArticleType(articleReqDTO.getUrl()))
                 .url(articleReqDTO.getUrl())
+                .favorite(articleReqDTO.getFavorite())
                 .build();
         articleRepository.save(article);
         log.info("article {}", article.toString());
@@ -107,6 +108,7 @@ public class ArticleService {
                 .articleId(article.getId())
                 .type(article.getType())
                 .title(article.getTitle())
+                .favorite(article.getFavorite())
                 .build();
     }
 

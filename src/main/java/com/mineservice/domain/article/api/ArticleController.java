@@ -42,7 +42,8 @@ public class ArticleController {
     @GetMapping("/articles")
     @ApiOperation(value = "아티클 불러오기")
     @ApiImplicitParam(name = "page", value = "페이지 번호(0...N)", required = true, dataType = "int", paramType = "query", example = "0")
-    public CommonResponse getArticles(@RequestParam int page) {
+    public CommonResponse getArticles(@RequestParam(defaultValue = "0") int page) {
+        log.info("article search page: {}", page);
 
         PageRequest pageRequest = PageRequest.of(page, 10);
         pageRequest.withSort(Sort.Direction.ASC, "id");
@@ -51,6 +52,7 @@ public class ArticleController {
 
         ArticleResDTO articleList = articleService.findAllArticlesByUserId(userId, pageRequest);
 
+        log.info("article list: {}", articleList.toString());
         return responseService.getSingleResponse(articleList);
     }
 
