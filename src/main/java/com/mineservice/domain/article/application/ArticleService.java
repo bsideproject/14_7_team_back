@@ -9,6 +9,7 @@ import com.mineservice.domain.article.repository.ArticleAlarmRepository;
 import com.mineservice.domain.article.repository.ArticleRepository;
 import com.mineservice.domain.article_tag.domain.ArticleTag;
 import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
+import com.mineservice.domain.file_info.application.FileInfoService;
 import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.tag.domain.Tag;
 import com.mineservice.domain.user.domain.UserInfo;
@@ -31,6 +32,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final TagService tagService;
+    private final FileInfoService fileInfoService;
     private final ArticleTagRepository articleTagRepository;
     private final UserInfoRepository userInfoRepository;
     private final ArticleAlarmRepository articleAlarmRepository;
@@ -47,7 +49,7 @@ public class ArticleService {
         Article article = Article.builder()
                 .userId(userId)
                 .title(articleReqDTO.getTitle())
-                .type(getType(articleReqDTO.getUrl()))
+                .type(getArticleType(articleReqDTO.getUrl()))
                 .url(articleReqDTO.getUrl())
                 .build();
         articleRepository.save(article);
@@ -60,15 +62,17 @@ public class ArticleService {
                     .article(article)
                     .tag(tag)
                     .build());
+            log.info("tag {}", tag.toString());
         }
 
-        // file upload
+        fileInfoService.createFileInfo(userId, article.getId(), articleReqDTO.getImg());
 
         if (articleReqDTO.getAlarmTime() != null) {
             createArticleAlarm(article.getId(), articleReqDTO.getAlarmTime());
         }
 
         articleTagRepository.saveAll(articleTagList);
+        log.info("articleTagList {}", articleTagList.toString());
     }
 
     @Transactional
@@ -78,6 +82,7 @@ public class ArticleService {
                 .time(alarmTime)
                 .build();
         articleAlarmRepository.save(articleAlarm);
+        log.info("articleAlarm {}", articleAlarm.toString());
     }
 
     public ArticleResDTO findAllArticlesByUserId(String userId, Pageable pageable) {
@@ -105,7 +110,7 @@ public class ArticleService {
                 .build();
     }
 
-    private String getType(String url) {
+    private String getArticleType(String url) {
         if (url == null) {
             return "image";
         } else if (url.contains("youtube")) {

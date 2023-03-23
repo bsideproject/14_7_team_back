@@ -2,14 +2,12 @@ package com.mineservice.domain.article.domain;
 
 import com.mineservice.domain.article_tag.domain.ArticleTag;
 import com.mineservice.domain.file_info.domain.FileInfo;
-import com.mineservice.domain.user.domain.UserAlarm;
 import com.mineservice.domain.user.domain.UserInfo;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

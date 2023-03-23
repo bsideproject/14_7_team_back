@@ -2,9 +2,10 @@ package com.mineservice.domain.article.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 @Entity

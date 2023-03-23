@@ -1,10 +1,7 @@
 package com.mineservice.domain.file_info.domain;
 
 import com.mineservice.domain.article.domain.Article;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,10 +13,11 @@ import java.time.LocalDateTime;
 public class FileInfo {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "article_id")
-    private String articleId;
+    private Long articleId;
 
     @Column(name = "bucket_name")
     private String bucketName;
@@ -55,4 +53,18 @@ public class FileInfo {
     @ManyToOne
     @JoinColumn(name = "article_id", insertable = false, updatable = false)
     private Article article;
+
+
+    @Builder
+    public FileInfo(Long articleId, String bucketName, String filePath, String fileExt, String saveName, String orgName, String useYn, String createBy, LocalDateTime createDt) {
+        this.articleId = articleId;
+        this.bucketName = bucketName;
+        this.filePath = filePath;
+        this.fileExt = fileExt;
+        this.saveName = saveName;
+        this.orgName = orgName;
+        this.useYn = "Y";
+        this.createBy = createBy;
+        this.createDt = LocalDateTime.now();
+    }
 }

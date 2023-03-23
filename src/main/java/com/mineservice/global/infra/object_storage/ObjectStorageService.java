@@ -5,38 +5,29 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mineservice.global.config.ObjectStorageConfig;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ObjectStorageService {
 
     private final AmazonS3 amazonS3;
 
     private final ObjectStorageConfig objectStorageConfig;
 
-    public void uploadMultipartFile(Long articleId, MultipartFile file) {
-        String uuid = UUID.randomUUID().toString(); // uuid
-        String fileExt = FilenameUtils.getExtension(file.getOriginalFilename()); // 확장자
-        String savePath = fileExt + "/" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM")); // 저장경로
-        String fileName = uuid + "." + fileExt; // 저장파일명
-        String bucketPath = savePath + "/" + fileName; // 버킷경로
 
+    public void uploadMultipartFile(MultipartFile file, String bucketPath) {
         try {
             upload(file, bucketPath);
-            // todo file_info 테이블 저장
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("file upload fail {}", e.getMessage());
         }
-
     }
 
 
