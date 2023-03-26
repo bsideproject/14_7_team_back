@@ -1,6 +1,8 @@
 package com.mineservice.global.infra.object_storage;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mineservice.global.config.ObjectStorageConfig;
@@ -33,6 +35,7 @@ public class ObjectStorageService {
 
     /**
      * MultipartFile 업로드
+     *
      * @param multipartFile the multipartFile
      * @param bucketPath    버킷 저장위치
      * @throws IOException the io exception
@@ -46,6 +49,7 @@ public class ObjectStorageService {
 
     /**
      * byte[] 업로드
+     *
      * @param bytes      the bytes
      * @param bucketPath 버킷 저장위치
      */
@@ -63,6 +67,17 @@ public class ObjectStorageService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void delete(String bucketPath) {
+        try {
+            amazonS3.deleteObject(objectStorageConfig.getBucket(), bucketPath);
+        } catch (AmazonS3Exception e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

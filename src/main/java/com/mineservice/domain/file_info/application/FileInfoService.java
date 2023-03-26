@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -46,6 +47,15 @@ public class FileInfoService {
 
         fileInfoRepository.save(fileInfo);
         log.info("fileInfo: {}", fileInfo.toString());
+    }
+
+    @Transactional
+    public void deleteFileInfo(Long articleId) {
+        Optional<FileInfo> optionalFileInfo = fileInfoRepository.findByArticleId(articleId);
+        if (optionalFileInfo.isPresent()) {
+            objectStorageService.delete(optionalFileInfo.get().getFilePath());
+            fileInfoRepository.deleteByArticleId(articleId);
+        }
     }
 
 }

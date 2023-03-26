@@ -3,6 +3,7 @@ package com.mineservice.domain.article.api;
 import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
+import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.user.domain.UserInfo;
 import com.mineservice.global.common.response.CommonResponse;
 import com.mineservice.global.common.response.ResponseService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final TagService tagService;
     private final ResponseService responseService;
 
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -63,6 +65,10 @@ public class ArticleController {
         log.info("deleteArticle id :{}", id);
 
         articleService.deleteArticle(id);
+
+        String userId = "TEST"; // todo 테스트 후 삭제해야함
+
+        tagService.deleteTagByUserId(userId);
 
         return responseService.getSuccessResponse();
     }

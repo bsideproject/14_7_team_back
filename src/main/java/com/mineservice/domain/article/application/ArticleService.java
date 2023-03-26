@@ -97,7 +97,9 @@ public class ArticleService {
                 .build();
     }
 
+    @Transactional
     public void deleteArticle(Long articleId) {
+        fileInfoService.deleteFileInfo(articleId);
         articleTagRepository.deleteByArticleId(articleId);
         articleRepository.deleteById(articleId);
     }
