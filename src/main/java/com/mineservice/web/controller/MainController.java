@@ -2,6 +2,7 @@ package com.mineservice.web.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
@@ -35,8 +37,10 @@ public class MainController {
     Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    @GetMapping("/login")
-    public String getLoginPage(Model model){
+    @GetMapping("/login/oauth2/code/naver")
+    public String getLoginPage(@RequestParam("code") String code, @RequestParam("state") String state,
+        HttpServletRequest request, Model model){
+        log.info("로그인 페이지 들어옴");
         Iterable<ClientRegistration> clientRegistrations = null;
         ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository).as(Iterable.class);
 

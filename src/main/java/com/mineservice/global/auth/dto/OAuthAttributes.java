@@ -28,11 +28,8 @@ public class OAuthAttributes {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
         return OAuthAttributes.builder()
-            .name((String) response.get("nickname"))
+            .name((String) response.get("name"))
             .email((String) response.get("email"))
-            .picture((String) response.get("profile_image"))
-            .gender((String) response.get("gender"))
-            .age((String) response.get("age"))
             .attributes(response)
             .nameAttributeKey(userNameAttributeName)
             .build();
