@@ -12,7 +12,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Page<Article> findAllByUserId(String userId, Pageable pageable);
 
-    List<Article> findArticlesByTitleStartingWith(String title);
+    List<Article> findArticlesByUserIdAndTitleStartingWith(String userId, String title);
 
     Optional<Article> findArticleByUrl(String url);
 }

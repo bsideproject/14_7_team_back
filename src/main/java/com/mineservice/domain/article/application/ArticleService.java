@@ -51,7 +51,7 @@ public class ArticleService {
         String articleType = getArticleType(articleReqDTO.getUrl());
         if ("image".equals(articleType)) {
             String title = "MINE_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            List<Article> sameTitleArticleList = articleRepository.findArticlesByTitleStartingWith(title);
+            List<Article> sameTitleArticleList = articleRepository.findArticlesByUserIdAndTitleStartingWith(userId, title);
             if (sameTitleArticleList.isEmpty()) {
                 articleReqDTO.setTitle(title);
             } else {
@@ -120,6 +120,7 @@ public class ArticleService {
     public void deleteArticle(Long articleId) {
         fileInfoService.deleteFileInfo(articleId);
         articleTagRepository.deleteByArticleId(articleId);
+        articleAlarmRepository.deleteByArticleId(articleId);
         articleRepository.deleteById(articleId);
     }
 
