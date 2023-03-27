@@ -19,6 +19,8 @@ public class UserAlarm {
     @Column(name = "user_id")
     private String userId;
 
+    private String frequency;
+
     private LocalTime time;
 
     @Column(name = "modify_by")
