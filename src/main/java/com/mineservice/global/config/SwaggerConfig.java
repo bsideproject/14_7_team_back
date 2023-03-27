@@ -35,7 +35,8 @@ public class SwaggerConfig {
 
     @Bean
     public Docket restAPI() {
-        return new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.OAS_30)
+                .useDefaultResponseMessages(false)
                 .alternateTypeRules(newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
                 .apiInfo(apiInfo())
                 .select()

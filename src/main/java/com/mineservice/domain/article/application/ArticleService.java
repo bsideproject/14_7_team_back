@@ -21,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,10 +48,27 @@ public class ArticleService {
 
     @Transactional
     public void createArticle(String userId, ArticleReqDTO articleReqDTO) {
+        String articleType = getArticleType(articleReqDTO.getUrl());
+        if ("image".equals(articleType)) {
+            String title = "MINE_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+            List<Article> sameTitleArticleList = articleRepository.findArticlesByTitleStartingWith(title);
+            if (sameTitleArticleList.isEmpty()) {
+                articleReqDTO.setTitle(title);
+            } else {
+                articleReqDTO.setTitle(title + "(" + sameTitleArticleList.size() + ")");
+            }
+        } else {
+            articleRepository.findArticleByUrl(articleReqDTO.getUrl())
+                    .ifPresent(article -> {
+                        throw new IllegalArgumentException("이미 등록된 링크입니다.");
+                    });
+        }
+        log.info("articleTitle {}", articleReqDTO.getTitle());
+
         Article article = Article.builder()
                 .userId(userId)
                 .title(articleReqDTO.getTitle())
-                .type(getArticleType(articleReqDTO.getUrl()))
+                .type(articleType)
                 .url(articleReqDTO.getUrl())
                 .favorite(articleReqDTO.getFavorite())
                 .build();

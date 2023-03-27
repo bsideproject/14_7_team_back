@@ -15,25 +15,25 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(exclude = "img")
-@ApiModel(description = "링크 등록 요청 객체")
+@ApiModel(value = "링크 등록 요청 객체")
 public class ArticleReqDTO {
 
-    @ApiModelProperty(notes = "제목", example = "테스트")
-    private String title;
+    @ApiModelProperty(value = "제목", example = "테스트")
+    private String title = null;
 
-    @ApiModelProperty(notes = "링크", example = "https://www.naver.com")
+    @ApiModelProperty(value = "링크", example = "https://www.naver.com")
     private String url = null;
 
-    @ApiModelProperty(notes = "이미지", example = "image.png")
+    @ApiModelProperty(value = "이미지", example = "image.png")
     private MultipartFile img;
 
-    @ApiModelProperty(notes = "즐겨찾기(Y/N)", example = "Y")
+    @ApiModelProperty(value = "즐겨찾기(Y/N)", example = "Y")
     private String favorite = "N";
 
-    @ApiModelProperty(notes = "태그리스트", example = "[태그1, 태그2]")
+    @ApiModelProperty(value = "태그리스트", example = "[태그1, 태그2]")
     private List<String> tags = new ArrayList<>();
 
-    @ApiModelProperty(notes = "알람시각(yyyy-MM-dd HH:mm)", example = "2023-03-15 10:30")
+    @ApiModelProperty(value = "알람시각(yyyy-MM-dd HH:mm)", example = "2023-03-15 10:30")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime alarmTime = null;
 
