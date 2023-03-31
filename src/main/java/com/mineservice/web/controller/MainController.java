@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
@@ -37,6 +38,7 @@ public class MainController {
     Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
     private final ClientRegistrationRepository clientRegistrationRepository;
 
+
     @GetMapping("/login/oauth2/code/naver")
     public String getLoginPage(@RequestParam("code") String code, @RequestParam("state") String state,
         HttpServletRequest request, Model model){
@@ -54,7 +56,7 @@ public class MainController {
                 authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
         model.addAttribute("urls", oauth2AuthenticationUrls);
 
-        return "login";
+        return "naverLogin";
     }
 
     @RequestMapping("/accessDenied")
