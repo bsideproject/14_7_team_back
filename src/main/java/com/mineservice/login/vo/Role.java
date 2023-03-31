@@ -1,4 +1,4 @@
-package com.mineservice.domain.user;
+package com.mineservice.login.vo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
