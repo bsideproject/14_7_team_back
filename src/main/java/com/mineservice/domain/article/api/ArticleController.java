@@ -4,9 +4,10 @@ import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
 import com.mineservice.domain.tag.application.TagService;
-import com.mineservice.domain.user.domain.UserInfo;
 import com.mineservice.global.common.response.CommonResponse;
 import com.mineservice.global.common.response.ResponseService;
+import com.mineservice.login.entity.User;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class ArticleController {
         log.info("imgOrgName :{}", reqDTO.getImg().isEmpty() ? null : reqDTO.getImg().getOriginalFilename());
 
         String userId = "TEST"; // todo 테스트 후 삭제해야함
-        UserInfo userInfo = articleService.createUserInfo(userId); // todo 테스트 후 삭제해야함
+        User userInfo = articleService.createUserInfo(userId); // todo 테스트 후 삭제해야함
 
 
         articleService.createArticle(userId, reqDTO);

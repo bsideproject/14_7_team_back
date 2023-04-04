@@ -12,8 +12,9 @@ import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
 import com.mineservice.domain.file_info.application.FileInfoService;
 import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.tag.domain.Tag;
-import com.mineservice.domain.user.domain.UserInfo;
-import com.mineservice.domain.user.repository.UserInfoRepository;
+import com.mineservice.domain.user.UserRepository;
+import com.mineservice.login.entity.User;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,13 +37,16 @@ public class ArticleService {
     private final TagService tagService;
     private final FileInfoService fileInfoService;
     private final ArticleTagRepository articleTagRepository;
-    private final UserInfoRepository userInfoRepository;
+    private final UserRepository userRepository;
     private final ArticleAlarmRepository articleAlarmRepository;
 
     @Transactional
-    public UserInfo createUserInfo(String userId) {
-        return userInfoRepository.save(UserInfo.builder()
+    public User createUserInfo(String userId) {
+        return userRepository.save(User.builder()
                 .id(userId)
+                .name("TESET")
+                .email("test@test.com")
+                .provider("test")
                 .build());
     }
 

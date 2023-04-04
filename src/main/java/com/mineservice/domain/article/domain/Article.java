@@ -2,7 +2,7 @@ package com.mineservice.domain.article.domain;
 
 import com.mineservice.domain.article_tag.domain.ArticleTag;
 import com.mineservice.domain.file_info.domain.FileInfo;
-import com.mineservice.domain.user.domain.UserInfo;
+import com.mineservice.login.entity.User;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -52,7 +52,7 @@ public class Article {
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserInfo userInfo;
+    private User userInfo;
 
     @OneToMany(mappedBy = "article")
     List<ArticleTag> articleTags;
