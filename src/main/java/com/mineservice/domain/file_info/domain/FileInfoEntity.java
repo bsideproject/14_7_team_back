@@ -1,6 +1,6 @@
 package com.mineservice.domain.file_info.domain;
 
-import com.mineservice.domain.article.domain.Article;
+import com.mineservice.domain.article.domain.ArticleEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FileInfo {
+@Table(name = "file_info")
+public class FileInfoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,11 +53,11 @@ public class FileInfo {
 
     @ManyToOne
     @JoinColumn(name = "article_id", insertable = false, updatable = false)
-    private Article article;
+    private ArticleEntity article;
 
 
     @Builder
-    public FileInfo(Long articleId, String bucketName, String filePath, String fileExt, String saveName, String orgName, String useYn, String createBy, LocalDateTime createDt) {
+    public FileInfoEntity(Long articleId, String bucketName, String filePath, String fileExt, String saveName, String orgName, String useYn, String createBy, LocalDateTime createDt) {
         this.articleId = articleId;
         this.bucketName = bucketName;
         this.filePath = filePath;

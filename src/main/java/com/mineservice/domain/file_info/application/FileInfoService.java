@@ -1,6 +1,6 @@
 package com.mineservice.domain.file_info.application;
 
-import com.mineservice.domain.file_info.domain.FileInfo;
+import com.mineservice.domain.file_info.domain.FileInfoEntity;
 import com.mineservice.domain.file_info.repository.FileInfoRepository;
 import com.mineservice.global.config.ObjectStorageConfig;
 import com.mineservice.global.infra.object_storage.ObjectStorageService;
@@ -33,7 +33,7 @@ public class FileInfoService {
         String fileName = uuid + "." + fileExt; // 저장파일명
         String bucketPath = savePath + "/" + fileName; // 버킷경로
 
-        FileInfo fileInfo = FileInfo.builder()
+        FileInfoEntity fileInfoEntity = FileInfoEntity.builder()
                 .articleId(articleId)
                 .bucketName(objectStorageConfig.getBucket())
                 .filePath(bucketPath)
@@ -45,13 +45,13 @@ public class FileInfoService {
 
         objectStorageService.uploadMultipartFile(file, bucketPath);
 
-        fileInfoRepository.save(fileInfo);
-        log.info("fileInfo: {}", fileInfo.toString());
+        fileInfoRepository.save(fileInfoEntity);
+        log.info("fileInfo: {}", fileInfoEntity.toString());
     }
 
     @Transactional
     public void deleteFileInfo(Long articleId) {
-        Optional<FileInfo> optionalFileInfo = fileInfoRepository.findByArticleId(articleId);
+        Optional<FileInfoEntity> optionalFileInfo = fileInfoRepository.findByArticleId(articleId);
         if (optionalFileInfo.isPresent()) {
             objectStorageService.delete(optionalFileInfo.get().getFilePath());
             fileInfoRepository.deleteByArticleId(articleId);

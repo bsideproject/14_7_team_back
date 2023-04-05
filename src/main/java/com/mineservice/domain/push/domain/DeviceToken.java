@@ -1,5 +1,6 @@
 package com.mineservice.domain.push.domain;
 
+import javax.persistence.Table;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "device")
 public class DeviceToken {
 
     @Id

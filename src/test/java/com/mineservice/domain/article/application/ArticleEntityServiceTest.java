@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
-class ArticleServiceTest {
+class ArticleEntityServiceTest {
 
     @Autowired
     private ArticleService articleService;
