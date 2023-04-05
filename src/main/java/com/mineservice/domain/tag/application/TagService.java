@@ -1,8 +1,8 @@
 package com.mineservice.domain.tag.application;
 
-import com.mineservice.domain.article_tag.domain.ArticleTag;
+import com.mineservice.domain.article_tag.domain.ArticleTagEntity;
 import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
-import com.mineservice.domain.tag.domain.Tag;
+import com.mineservice.domain.tag.domain.TagEntity;
 import com.mineservice.domain.tag.repository.TagRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,30 +21,31 @@ public class TagService {
     private final ArticleTagRepository articleTagRepository;
 
     @Transactional
-    public Tag createTagByArticle(String userId, String tagName) {
-        Optional<Tag> findByName = tagRepository.findByUserIdAndName(userId, tagName);
-        Tag tag;
+    public TagEntity createTagByArticle(String userId, String tagName) {
+        Optional<TagEntity> findByName = tagRepository.findByUserIdAndName(userId, tagName);
+        TagEntity tagEntity;
         if (findByName.isEmpty()) {
-            tag = Tag.builder()
+            tagEntity = TagEntity.builder()
                     .userId(userId)
                     .name(tagName)
                     .createBy(userId)
                     .build();
-            tagRepository.save(tag);
+            tagRepository.save(tagEntity);
         } else {
-            tag = findByName.get();
+            tagEntity = findByName.get();
         }
-        return tag;
+        return tagEntity;
     }
 
     @Transactional
     public void deleteTagByUserId(String userId) {
-        List<Tag> tagList = tagRepository.findAllByUserId(userId);
+        List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
 
-        for(Tag tag : tagList) {
-            Optional<ArticleTag> optionalArticleTag = articleTagRepository.findByTagId(tag.getId());
+        for(TagEntity tagEntity : tagEntityList) {
+            Optional<ArticleTagEntity> optionalArticleTag = articleTagRepository.findByTagId(
+                tagEntity.getId());
             if (optionalArticleTag.isEmpty()) {
-                tagRepository.delete(tag);
+                tagRepository.delete(tagEntity);
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.mineservice.domain.article_tag.domain;
 
-import com.mineservice.domain.article.domain.Article;
-import com.mineservice.domain.tag.domain.Tag;
+import com.mineservice.domain.article.domain.ArticleEntity;
+import com.mineservice.domain.tag.domain.TagEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,20 +10,21 @@ import javax.persistence.*;
 @Entity
 @IdClass(ArticleTagPK.class)
 @NoArgsConstructor
-public class ArticleTag {
+@Table(name = "article_tag")
+public class ArticleTagEntity {
 
     @Id
     @ManyToOne
     @JoinColumn(name = "article_id")
-    private Article article;
+    private ArticleEntity article;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "tag_id")
-    private Tag tag;
+    private TagEntity tag;
 
     @Builder
-    public ArticleTag(Article article, Tag tag) {
+    public ArticleTagEntity(ArticleEntity article, TagEntity tag) {
         this.article = article;
         this.tag = tag;
     }

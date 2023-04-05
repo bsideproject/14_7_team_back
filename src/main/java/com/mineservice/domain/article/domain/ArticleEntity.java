@@ -1,8 +1,8 @@
 package com.mineservice.domain.article.domain;
 
-import com.mineservice.domain.article_tag.domain.ArticleTag;
-import com.mineservice.domain.file_info.domain.FileInfo;
-import com.mineservice.domain.user.domain.UserInfo;
+import com.mineservice.domain.article_tag.domain.ArticleTagEntity;
+import com.mineservice.domain.file_info.domain.FileInfoEntity;
+import com.mineservice.domain.user.domain.UserInfoEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -15,7 +15,8 @@ import java.util.List;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-public class Article {
+@Table(name = "article")
+public class ArticleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,20 +53,20 @@ public class Article {
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserInfo userInfo;
+    private UserInfoEntity userInfo;
 
     @OneToMany(mappedBy = "article")
-    List<ArticleTag> articleTags;
+    List<ArticleTagEntity> articleTag;
 
     @OneToMany(mappedBy = "article")
-    private List<FileInfo> fileInfos;
+    private List<FileInfoEntity> fileInfoEntities;
 
     @OneToOne
     @JoinColumn(name = "id")
     private ArticleAlarm articleAlarm;
 
     @Builder
-    protected Article(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
+    protected ArticleEntity(String userId, String title, String type, String url, String favorite, String modifyBy, LocalDateTime modifyDt, String createBy) {
         this.userId = userId;
         this.title = title;
         this.type = type;

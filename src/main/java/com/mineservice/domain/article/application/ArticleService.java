@@ -1,18 +1,18 @@
 package com.mineservice.domain.article.application;
 
-import com.mineservice.domain.article.domain.Article;
+import com.mineservice.domain.article.domain.ArticleEntity;
 import com.mineservice.domain.article.domain.ArticleAlarm;
 import com.mineservice.domain.article.dto.ArticleDTO;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
 import com.mineservice.domain.article.repository.ArticleAlarmRepository;
 import com.mineservice.domain.article.repository.ArticleRepository;
-import com.mineservice.domain.article_tag.domain.ArticleTag;
+import com.mineservice.domain.article_tag.domain.ArticleTagEntity;
 import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
 import com.mineservice.domain.file_info.application.FileInfoService;
 import com.mineservice.domain.tag.application.TagService;
-import com.mineservice.domain.tag.domain.Tag;
-import com.mineservice.domain.user.domain.UserInfo;
+import com.mineservice.domain.tag.domain.TagEntity;
+import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.domain.user.repository.UserInfoRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +40,8 @@ public class ArticleService {
     private final ArticleAlarmRepository articleAlarmRepository;
 
     @Transactional
-    public UserInfo createUserInfo(String userId) {
-        return userInfoRepository.save(UserInfo.builder()
+    public UserInfoEntity createUserInfo(String userId) {
+        return userInfoRepository.save(UserInfoEntity.builder()
                 .id(userId)
                 .build());
     }
@@ -51,11 +51,11 @@ public class ArticleService {
         String articleType = getArticleType(articleReqDTO.getUrl());
         if ("image".equals(articleType)) {
             String title = "MINE_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            List<Article> sameTitleArticleList = articleRepository.findArticlesByUserIdAndTitleStartingWith(userId, title);
-            if (sameTitleArticleList.isEmpty()) {
+            List<ArticleEntity> sameTitleArticleListEntity = articleRepository.findArticlesByUserIdAndTitleStartingWith(userId, title);
+            if (sameTitleArticleListEntity.isEmpty()) {
                 articleReqDTO.setTitle(title);
             } else {
-                articleReqDTO.setTitle(title + "(" + sameTitleArticleList.size() + ")");
+                articleReqDTO.setTitle(title + "(" + sameTitleArticleListEntity.size() + ")");
             }
         } else {
             articleRepository.findArticleByUrl(articleReqDTO.getUrl())
@@ -65,34 +65,34 @@ public class ArticleService {
         }
         log.info("articleTitle {}", articleReqDTO.getTitle());
 
-        Article article = Article.builder()
+        ArticleEntity articleEntity = ArticleEntity.builder()
                 .userId(userId)
                 .title(articleReqDTO.getTitle())
                 .type(articleType)
                 .url(articleReqDTO.getUrl())
                 .favorite(articleReqDTO.getFavorite())
                 .build();
-        articleRepository.save(article);
-        log.info("article {}", article.toString());
+        articleRepository.save(articleEntity);
+        log.info("article {}", articleEntity.toString());
 
-        List<ArticleTag> articleTagList = new ArrayList<>();
+        List<ArticleTagEntity> articleTagEntityList = new ArrayList<>();
         for (String tagName : articleReqDTO.getTags()) {
-            Tag tag = tagService.createTagByArticle(userId, tagName);
-            articleTagList.add(ArticleTag.builder()
-                    .article(article)
-                    .tag(tag)
+            TagEntity tagEntity = tagService.createTagByArticle(userId, tagName);
+            articleTagEntityList.add(ArticleTagEntity.builder()
+                    .article(articleEntity)
+                    .tag(tagEntity)
                     .build());
-            log.info("tag {}", tag.toString());
+            log.info("tag {}", tagEntity.toString());
         }
 
-        fileInfoService.createFileInfo(userId, article.getId(), articleReqDTO.getImg());
+        fileInfoService.createFileInfo(userId, articleEntity.getId(), articleReqDTO.getImg());
 
         if (articleReqDTO.getAlarmTime() != null) {
-            createArticleAlarm(article.getId(), articleReqDTO.getAlarmTime());
+            createArticleAlarm(articleEntity.getId(), articleReqDTO.getAlarmTime());
         }
 
-        articleTagRepository.saveAll(articleTagList);
-        log.info("articleTagList {}", articleTagList.toString());
+        articleTagRepository.saveAll(articleTagEntityList);
+        log.info("articleTagList {}", articleTagEntityList.toString());
     }
 
     @Transactional
@@ -106,7 +106,7 @@ public class ArticleService {
     }
 
     public ArticleResDTO findAllArticlesByUserId(String userId, Pageable pageable) {
-        Page<Article> findByUserId = articleRepository.findAllByUserId(userId, pageable);
+        Page<ArticleEntity> findByUserId = articleRepository.findAllByUserId(userId, pageable);
         Page<ArticleDTO> articleDTOPage = findByUserId.map(this::toDTO);
 
         return ArticleResDTO.builder()
@@ -125,12 +125,12 @@ public class ArticleService {
     }
 
 
-    private ArticleDTO toDTO(Article article) {
+    private ArticleDTO toDTO(ArticleEntity articleEntity) {
         return ArticleDTO.builder()
-                .articleId(article.getId())
-                .type(article.getType())
-                .title(article.getTitle())
-                .favorite(article.getFavorite())
+                .articleId(articleEntity.getId())
+                .type(articleEntity.getType())
+                .title(articleEntity.getTitle())
+                .favorite(articleEntity.getFavorite())
                 .build();
     }
 

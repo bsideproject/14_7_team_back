@@ -13,7 +13,8 @@ import java.time.LocalTime;
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserAlarm {
+@Table(name = "user_alarm")
+public class UserAlarmEntity {
 
     @Id
     @Column(name = "user_id")

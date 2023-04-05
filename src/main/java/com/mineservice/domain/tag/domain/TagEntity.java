@@ -1,13 +1,12 @@
 package com.mineservice.domain.tag.domain;
 
-import com.mineservice.domain.article_tag.domain.ArticleTag;
-import com.mineservice.domain.user.domain.UserInfo;
+import com.mineservice.domain.article_tag.domain.ArticleTagEntity;
+import com.mineservice.domain.user.domain.UserInfoEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,7 +14,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-public class Tag {
+public class TagEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,13 +33,13 @@ public class Tag {
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserInfo userInfo;
+    private UserInfoEntity userInfo;
 
     @OneToMany(mappedBy = "article")
-    List<ArticleTag> articleTags;
+    List<ArticleTagEntity> articleTag;
 
     @Builder
-    protected Tag(String userId, String name, String createBy) {
+    protected TagEntity(String userId, String name, String createBy) {
         this.userId = userId;
         this.name = name;
         this.createBy = createBy;

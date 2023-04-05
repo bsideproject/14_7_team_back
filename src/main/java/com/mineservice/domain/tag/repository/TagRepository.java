@@ -1,16 +1,16 @@
 package com.mineservice.domain.tag.repository;
 
-import com.mineservice.domain.tag.domain.Tag;
+import com.mineservice.domain.tag.domain.TagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TagRepository extends JpaRepository<Tag, Long> {
+public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
-    Optional<Tag> findByName(String tagName);
+    Optional<TagEntity> findByName(String tagName);
 
-    Optional<Tag> findByUserIdAndName(String userId, String tagName);
+    Optional<TagEntity> findByUserIdAndName(String userId, String tagName);
 
-    List<Tag> findAllByUserId(String userId);
+    List<TagEntity> findAllByUserId(String userId);
 }
