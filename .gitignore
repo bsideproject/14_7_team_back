@@ -41,3 +41,7 @@ out/
 application-private-key.properties
 src/main/resources/application-private-key.properties
 *application-private-key.properties
+
+### Log ###
+/log/
+*.log

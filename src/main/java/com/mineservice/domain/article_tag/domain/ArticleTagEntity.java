@@ -14,12 +14,12 @@ import javax.persistence.*;
 public class ArticleTagEntity {
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private ArticleEntity article;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private TagEntity tag;
 

@@ -33,7 +33,8 @@ public class ArticleController {
         log.info("imgOrgName :{}", reqDTO.getImg().isEmpty() ? null : reqDTO.getImg().getOriginalFilename());
 
         String userId = "TEST"; // todo 테스트 후 삭제해야함
-        UserInfoEntity userInfoEntity = articleService.createUserInfo(userId); // todo 테스트 후 삭제해야함
+
+        UserInfoEntity userInfo = articleService.createUserInfo(userId); // todo 테스트 후 삭제해야함
 
 
         articleService.createArticle(userId, reqDTO);

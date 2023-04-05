@@ -43,6 +43,9 @@ public class ArticleService {
     public UserInfoEntity createUserInfo(String userId) {
         return userInfoRepository.save(UserInfoEntity.builder()
                 .id(userId)
+                .userName("TESET")
+                .userEmail("test@test.com")
+                .provider("test")
                 .build());
     }
 
