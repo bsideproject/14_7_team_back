@@ -8,8 +8,8 @@
             <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
         </Console>
         <RollingFile name="FileLog"
-                     fileName="/var/log/mine.log"
-                     filePattern="/var/log/mine-%d{yyyy-MM-dd}-%i.log">
+                     fileName="./log/mine.log"
+                     filePattern="./log/mine-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" />

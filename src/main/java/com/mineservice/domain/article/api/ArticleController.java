@@ -1,20 +1,20 @@
 package com.mineservice.domain.article.api;
 
+import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
+import com.mineservice.domain.article.dto.ArticleResDTO;
+import com.mineservice.domain.tag.application.TagService;
+import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.global.common.response.CommonResponse;
 import com.mineservice.global.common.response.ResponseService;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,8 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleController {
 
-    public static List<ArticleReqDTO> dummyList = new ArrayList<>();
-
+    private final ArticleService articleService;
+    private final TagService tagService;
     private final ResponseService responseService;
 
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -32,18 +32,31 @@ public class ArticleController {
         log.info("requestDTO :{}", reqDTO.toString());
         log.info("imgOrgName :{}", reqDTO.getImg().isEmpty() ? null : reqDTO.getImg().getOriginalFilename());
 
-        // TODO: 2023-03-14(014) image 핸들링
-        dummyList.add(reqDTO);
+        String userId = "TEST"; // todo 테스트 후 삭제해야함
+
+        UserInfoEntity userInfo = articleService.createUserInfo(userId); // todo 테스트 후 삭제해야함
+
+
+        articleService.createArticle(userId, reqDTO);
 
         return responseService.getSuccessResponse();
     }
 
     @GetMapping("/articles")
     @ApiOperation(value = "아티클 불러오기")
-    public CommonResponse getArticles() {
-        log.info("responseBody :{}", dummyList.toString());
+    @ApiImplicitParam(name = "page", value = "페이지 번호(0...N)", required = true, dataType = "int", paramType = "query", example = "0")
+    public CommonResponse getArticles(@RequestParam(defaultValue = "0") int page) {
+        log.info("article search page: {}", page);
 
-        return responseService.getListResponse(dummyList);
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        pageRequest.withSort(Sort.Direction.ASC, "id");
+
+        String userId = "TEST"; // todo 테스트 후 삭제해야함
+
+        ArticleResDTO articleList = articleService.findAllArticlesByUserId(userId, pageRequest);
+
+        log.info("article list: {}", articleList.toString());
+        return responseService.getSingleResponse(articleList);
     }
 
     @DeleteMapping("/articles/{id}")
@@ -51,6 +64,12 @@ public class ArticleController {
     @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "long", paramType = "path", example = "1")
     public CommonResponse deleteArticle(@PathVariable Long id) {
         log.info("deleteArticle id :{}", id);
+
+        articleService.deleteArticle(id);
+
+        String userId = "TEST"; // todo 테스트 후 삭제해야함
+
+        tagService.deleteTagByUserId(userId);
 
         return responseService.getSuccessResponse();
     }
