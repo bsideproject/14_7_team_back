@@ -1,13 +1,10 @@
 package com.mineservice.global.config;
 
-import static springfox.documentation.schema.AlternateTypeRules.newRule;
-
 import com.fasterxml.classmate.TypeResolver;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +14,21 @@ import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.service.Server;
+import springfox.documentation.oas.annotations.EnableOpenApi;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 
 @Configuration
-@EnableSwagger2
+@EnableOpenApi
 public class SwaggerConfig {
 
     private final TypeResolver typeResolver;
@@ -74,12 +73,12 @@ public class SwaggerConfig {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("Authorization", authorizationScopes));
+        return Arrays.asList(new SecurityReference("X-AUTH-TOKEN", authorizationScopes));
     }
 
     // 추가
     private ApiKey apiKey() {
-        return new ApiKey("Authorization", "Authorization", "header");
+        return new ApiKey("X-AUTH-TOKEN", "Authorization", "header");
     }
 
     @Getter
@@ -89,7 +88,7 @@ public class SwaggerConfig {
         @ApiModelProperty(value = "페이지 번호(0..N)")
         private Integer page;
 
-        @ApiModelProperty(value = "페이지 크기", allowableValues="range[0, 100]")
+        @ApiModelProperty(value = "페이지 크기", allowableValues = "range[0, 100]")
         private Integer size;
 
         @ApiModelProperty(value = "정렬(사용법: 컬럼명,ASC|DESC)")
