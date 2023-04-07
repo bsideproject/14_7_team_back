@@ -6,11 +6,14 @@ import com.mineservice.login.service.AccessTokenService;
 import com.mineservice.login.service.RefreshTokenService;
 import com.mineservice.login.service.UserInfoService;
 import com.mineservice.login.vo.NaverUserInfo;
+import com.mineservice.login.vo.response.ResponseJwt;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +28,7 @@ public class JwtCreateController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login/naver")
-    public String jwtCreate(@RequestBody NaverUserInfo userInfo){
+    public ResponseEntity<ResponseJwt> jwtCreate(@RequestBody NaverUserInfo userInfo){
 
         UserInfoEntity userEntity = userInfoService.getUser(userInfo.getId(), userInfo.getProvider());
 
@@ -48,8 +51,13 @@ public class JwtCreateController {
             refreshTokenService.updateRefreshTokenByMemberLogin(userId, userInfo);
         }
 
+        String jwt = jwtTokenProvider.generateJwt(userId, roles);
+        ResponseJwt responseJwt = new ResponseJwt();
+        responseJwt.setAccessToken(jwt);
 
-        return jwtTokenProvider.generateJwt(userId, roles);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(responseJwt);
+
     }
 
 }
