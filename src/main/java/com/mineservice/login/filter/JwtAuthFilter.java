@@ -17,11 +17,16 @@ public class JwtAuthFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final String TOKEN_PREFIX = "Bearer ";
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException {
 
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        if(token != null){
+            token = token.replace(TOKEN_PREFIX, "");
+        }
 
         if(token != null && jwtTokenProvider.validateToken(token)){
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
