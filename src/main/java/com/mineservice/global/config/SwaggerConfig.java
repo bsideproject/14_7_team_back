@@ -1,10 +1,13 @@
 package com.mineservice.global.config;
 
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
+
 import com.fasterxml.classmate.TypeResolver;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +18,14 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.oas.annotations.EnableOpenApi;
-import springfox.documentation.service.*;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.Server;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 
 @Configuration
@@ -78,7 +79,7 @@ public class SwaggerConfig {
 
     // 추가
     private ApiKey apiKey() {
-        return new ApiKey("X-AUTH-TOKEN", "Authorization", "header");
+        return new ApiKey("Authorization", "Authorization", "header");
     }
 
     @Getter
