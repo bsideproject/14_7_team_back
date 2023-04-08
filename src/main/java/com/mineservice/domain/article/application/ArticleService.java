@@ -108,22 +108,23 @@ public class ArticleService {
                 .build();
     }
 
-    @Transactional
-    public void deleteArticle(Long articleId) {
-        fileInfoService.deleteFileInfo(articleId);
-        articleTagRepository.deleteByArticleId(articleId);
-        articleAlarmRepository.deleteByArticleId(articleId);
-        articleRepository.deleteById(articleId);
-    }
-
-
     private ArticleDTO toDTO(ArticleEntity articleEntity) {
         return ArticleDTO.builder()
                 .articleId(articleEntity.getId())
                 .type(articleEntity.getType())
                 .title(articleEntity.getTitle())
                 .favorite(articleEntity.getFavorite())
+                .read(articleEntity.getReadYn())
+                .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
                 .build();
+    }
+
+    @Transactional
+    public void deleteArticle(Long articleId) {
+        fileInfoService.deleteFileInfo(articleId);
+        articleTagRepository.deleteByArticleId(articleId);
+        articleAlarmRepository.deleteByArticleId(articleId);
+        articleRepository.deleteById(articleId);
     }
 
     private String getArticleType(String url) {

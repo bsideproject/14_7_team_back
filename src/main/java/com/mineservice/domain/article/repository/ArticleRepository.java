@@ -17,7 +17,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
     Optional<ArticleEntity> findArticleByUrl(String url);
 
 
-    @Query(value = "SELECT a.* FROM article a " +
+    @Query(value = "SELECT a.* " +
+            "FROM article a " +
             "LEFT JOIN article_tag atag ON a.id = atag.article_id " +
             "LEFT JOIN tag t ON t.id = atag.tag_id " +
             "WHERE a.user_id = :userId " +
