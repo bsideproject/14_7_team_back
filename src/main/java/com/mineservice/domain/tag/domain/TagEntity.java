@@ -11,9 +11,10 @@ import java.util.List;
 
 @Getter
 @Entity
-@ToString
+@ToString(exclude = {"userInfo", "articleTag"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
+@Table(name = "tag")
 public class TagEntity {
 
     @Id
@@ -31,11 +32,11 @@ public class TagEntity {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserInfoEntity userInfo;
 
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
     List<ArticleTagEntity> articleTag;
 
     @Builder

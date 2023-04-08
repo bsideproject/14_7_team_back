@@ -1,7 +1,7 @@
 package com.mineservice.domain.article.application;
 
-import com.mineservice.domain.article.domain.ArticleEntity;
 import com.mineservice.domain.article.domain.ArticleAlarm;
+import com.mineservice.domain.article.domain.ArticleEntity;
 import com.mineservice.domain.article.dto.ArticleDTO;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
@@ -12,8 +12,6 @@ import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
 import com.mineservice.domain.file_info.application.FileInfoService;
 import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.tag.domain.TagEntity;
-import com.mineservice.domain.user.domain.UserInfoEntity;
-import com.mineservice.domain.user.repository.UserInfoRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,18 +34,7 @@ public class ArticleService {
     private final TagService tagService;
     private final FileInfoService fileInfoService;
     private final ArticleTagRepository articleTagRepository;
-    private final UserInfoRepository userInfoRepository;
     private final ArticleAlarmRepository articleAlarmRepository;
-
-    @Transactional
-    public UserInfoEntity createUserInfo(String userId) {
-        return userInfoRepository.save(UserInfoEntity.builder()
-                .id(userId)
-                .userName("TESET")
-                .userEmail("test@test.com")
-                .provider("test")
-                .build());
-    }
 
     @Transactional
     public void createArticle(String userId, ArticleReqDTO articleReqDTO) {
@@ -88,14 +75,15 @@ public class ArticleService {
             log.info("tag {}", tagEntity.toString());
         }
 
-        fileInfoService.createFileInfo(userId, articleEntity.getId(), articleReqDTO.getImg());
+        if (articleReqDTO.getImg() != null) {
+            fileInfoService.createFileInfo(userId, articleEntity.getId(), articleReqDTO.getImg());
+        }
 
         if (articleReqDTO.getAlarmTime() != null) {
             createArticleAlarm(articleEntity.getId(), articleReqDTO.getAlarmTime());
         }
 
         articleTagRepository.saveAll(articleTagEntityList);
-        log.info("articleTagList {}", articleTagEntityList.toString());
     }
 
     @Transactional
@@ -108,9 +96,10 @@ public class ArticleService {
         log.info("articleAlarm {}", articleAlarm.toString());
     }
 
-    public ArticleResDTO findAllArticlesByUserId(String userId, Pageable pageable) {
-        Page<ArticleEntity> findByUserId = articleRepository.findAllByUserId(userId, pageable);
-        Page<ArticleDTO> articleDTOPage = findByUserId.map(this::toDTO);
+    public ArticleResDTO findAllBySearch(String title, String favorite, String readYn, List<String> types, List<String> tags, String userId, Pageable pageable) {
+        Page<ArticleEntity> allBySearch = articleRepository.findAllBySearch(title, favorite, readYn, types, tags, userId, pageable);
+        Page<ArticleDTO> articleDTOPage = allBySearch.map(this::toDTO);
+
 
         return ArticleResDTO.builder()
                 .totalArticleSize(articleDTOPage.getTotalElements())
@@ -143,7 +132,7 @@ public class ArticleService {
         } else if (url.contains("youtube")) {
             return "youtube";
         } else {
-            return "link";
+            return "article";
         }
     }
 

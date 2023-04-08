@@ -25,7 +25,7 @@ public class ArticleReqDTO {
     private String url = null;
 
     @ApiModelProperty(value = "이미지", example = "image.png")
-    private MultipartFile img;
+    private MultipartFile img = null;
 
     @ApiModelProperty(value = "즐겨찾기(Y/N)", example = "Y")
     private String favorite = "N";
