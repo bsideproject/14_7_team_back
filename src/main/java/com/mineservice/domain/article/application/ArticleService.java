@@ -60,7 +60,7 @@ public class ArticleService {
                 .title(articleReqDTO.getTitle())
                 .type(articleType)
                 .url(articleReqDTO.getUrl())
-                .favorite(articleReqDTO.getFavorite())
+                .favorite(articleReqDTO.isFavorite() ? "Y": "N")
                 .build();
         articleRepository.save(articleEntity);
         log.info("article {}", articleEntity.toString());
@@ -96,8 +96,11 @@ public class ArticleService {
         log.info("articleAlarm {}", articleAlarm.toString());
     }
 
-    public ArticleResDTO findAllBySearch(String title, String favorite, String readYn, List<String> types, List<String> tags, String userId, Pageable pageable) {
-        Page<ArticleEntity> allBySearch = articleRepository.findAllBySearch(title, favorite, readYn, types, tags, userId, pageable);
+    public ArticleResDTO findAllBySearch(String title, boolean favorite, boolean readYn, List<String> types, List<String> tags, String userId, Pageable pageable) {
+        String favoriteStr = favorite ? "Y" : "N";
+        String readYnStr = readYn ? "Y" : "N";
+
+        Page<ArticleEntity> allBySearch = articleRepository.findAllBySearch(title, favoriteStr, readYnStr, types, tags, userId, pageable);
         Page<ArticleDTO> articleDTOPage = allBySearch.map(this::toDTO);
 
 
@@ -111,10 +114,12 @@ public class ArticleService {
     private ArticleDTO toDTO(ArticleEntity articleEntity) {
         return ArticleDTO.builder()
                 .articleId(articleEntity.getId())
-                .type(articleEntity.getType())
                 .title(articleEntity.getTitle())
-                .favorite(articleEntity.getFavorite())
-                .read(articleEntity.getReadYn())
+                .type(articleEntity.getType())
+                .favorite("Y".equals(articleEntity.getFavorite()))
+                .read("Y".equals(articleEntity.getReadYn()))
+                .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
+                .thumbUrl("localhost:8080/image/thumb/" + articleEntity.getId())
                 .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
                 .build();
     }

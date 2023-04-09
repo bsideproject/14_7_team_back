@@ -46,18 +46,18 @@ public class ArticleController {
     @GetMapping("/articles")
     @ApiOperation(value = "아티클 불러오기")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "페이지 번호(0...N)", dataType = "int", paramType = "query", example = "0", defaultValue = "0"),
-            @ApiImplicitParam(name = "title", value = "제목", dataType = "string", paramType = "query", example = ""),
-            @ApiImplicitParam(name = "favorite", value = "즐겨찾기유무(즐찾:Y|미즐찾:N)", dataType = "string", paramType = "query", example = ""),
-            @ApiImplicitParam(name = "readYn", value = "열람여부(열람:Y|미열람:N)", dataType = "string", paramType = "query", example = ""),
-            @ApiImplicitParam(name = "types", value = "콘텐츠타입(article|image|youtube)", dataType = "array", paramType = "query", example = ""),
-            @ApiImplicitParam(name = "tags", value = "태그리스트(태그1,태그2,태그3)", dataType = "array", paramType = "query", example = ""),
-            @ApiImplicitParam(name = "sort", value = "정렬(오래된순:asc|최근순:desc)", dataType = "string", paramType = "query", example = "desc", defaultValue = "desc")
+            @ApiImplicitParam(name = "page", value = "페이지 번호(0...N)", dataType = "java.lang.Integer", paramType = "query", example = "0", defaultValue = "0"),
+            @ApiImplicitParam(name = "title", value = "제목", dataType = "java.lang.String", paramType = "query", example = ""),
+            @ApiImplicitParam(name = "favorite", value = "즐겨찾기유무(즐찾:true|미즐찾:false)", dataType = "java.lang.Boolean", paramType = "query", example = ""),
+            @ApiImplicitParam(name = "readYn", value = "열람여부(열람:true|미열람:false)", dataType = "java.lang.Boolean", paramType = "query", example = ""),
+            @ApiImplicitParam(name = "types", value = "콘텐츠타입(article|image|youtube)", dataType = "java.lang.String", allowMultiple = true, paramType = "query", example = ""),
+            @ApiImplicitParam(name = "tags", value = "태그리스트(태그1,태그2,태그3)", dataType = "java.lang.String", allowMultiple = true, paramType = "query", example = ""),
+            @ApiImplicitParam(name = "sort", value = "정렬(오래된순:asc|최근순:desc)", dataType = "java.lang.String", paramType = "query", example = "desc", defaultValue = "desc")
     })
     public ResponseEntity<ArticleResDTO> getArticles(@RequestParam(defaultValue = "0", required = false) int page,
                                                      @RequestParam(required = false) String title,
-                                                     @RequestParam(required = false) String favorite,
-                                                     @RequestParam(required = false) String readYn,
+                                                     @RequestParam(required = false) boolean favorite,
+                                                     @RequestParam(required = false) boolean readYn,
                                                      @RequestParam(required = false) List<String> types,
                                                      @RequestParam(required = false) List<String> tags,
                                                      @RequestParam(defaultValue = "desc", required = false) String sort,
@@ -76,7 +76,7 @@ public class ArticleController {
 
     @DeleteMapping("/articles/{id}")
     @ApiOperation(value = "아티클 삭제")
-    @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "long", paramType = "path", example = "1")
+    @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "java.lang.Long", paramType = "path", example = "1")
     public ResponseEntity<String> deleteArticle(@PathVariable Long id,
                                                 @ApiIgnore @AuthenticationPrincipal UserDetails user) {
         log.info("deleteArticle id :{}", id);

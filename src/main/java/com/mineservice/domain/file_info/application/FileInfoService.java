@@ -58,4 +58,9 @@ public class FileInfoService {
         }
     }
 
+    public FileInfoEntity findOneByArticleId(Long articleId) {
+        Optional<FileInfoEntity> optionalFileInfo = fileInfoRepository.findByArticleId(articleId);
+        return optionalFileInfo.orElse(null);
+    }
+
 }
