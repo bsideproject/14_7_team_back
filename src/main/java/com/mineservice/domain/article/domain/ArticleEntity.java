@@ -12,7 +12,7 @@ import java.util.List;
 
 @Getter
 @Entity
-@ToString
+@ToString(exclude = {"userInfo", "articleTag", "fileInfoEntities", "articleAlarm"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "article")
@@ -51,14 +51,14 @@ public class ArticleEntity {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserInfoEntity userInfo;
 
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
     List<ArticleTagEntity> articleTag;
 
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
     private List<FileInfoEntity> fileInfoEntities;
 
     @OneToOne

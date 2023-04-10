@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -48,6 +49,11 @@ public class TagService {
                 tagRepository.delete(tagEntity);
             }
         }
+    }
+
+    public List<String> findAllTagNameByArticleId(Long articleId) {
+        List<TagEntity> tagList = tagRepository.findAllByArticleId(articleId);
+        return tagList.stream().map(TagEntity::getName).collect(Collectors.toList());
     }
 
 }
