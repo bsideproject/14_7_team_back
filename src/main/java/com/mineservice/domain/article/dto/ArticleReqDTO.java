@@ -25,16 +25,16 @@ public class ArticleReqDTO {
     private String url = null;
 
     @ApiModelProperty(value = "이미지", example = "image.png")
-    private MultipartFile img;
+    private MultipartFile img = null;
 
-    @ApiModelProperty(value = "즐겨찾기(Y/N)", example = "Y")
-    private String favorite = "N";
+    @ApiModelProperty(value = "즐겨찾기(Y/N)", example = "false")
+    private boolean favorite = false;
 
     @ApiModelProperty(value = "태그리스트", example = "[태그1, 태그2]")
     private List<String> tags = new ArrayList<>();
 
-    @ApiModelProperty(value = "알람시각(yyyy-MM-dd HH:mm)", example = "2023-03-15 10:30")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @ApiModelProperty(value = "알람시각(2019-01-31T11:30:59.000Z)", example = "2023-03-15 10:30")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime alarmTime = null;
 
 }

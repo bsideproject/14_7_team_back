@@ -34,7 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @AllArgsConstructor
 @Entity
-@ToString
+@ToString(exclude = {"article", "tag", "userAlarm", "accessToken", "refreshToken"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "user_info")
