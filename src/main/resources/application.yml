@@ -25,6 +25,19 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  security:
+    oauth2:
+      client:
+        registration:
+          apple:
+            client-id: com.bside.Mine.services
+            client-secret:
+            authorization-grant-type: authorization_code
+            redirect-uri: https://mine.directory/login/oauth_apple
+        provider:
+          apple:
+            issuer-uri: https://appleid.apple.com
+
 
 token:
   expiration_time: '86400000'
