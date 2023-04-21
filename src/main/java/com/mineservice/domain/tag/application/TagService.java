@@ -3,6 +3,7 @@ package com.mineservice.domain.tag.application;
 import com.mineservice.domain.article_tag.domain.ArticleTagEntity;
 import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
 import com.mineservice.domain.tag.domain.TagEntity;
+import com.mineservice.domain.tag.dto.TagResDTO;
 import com.mineservice.domain.tag.repository.TagRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,9 @@ public class TagService {
     public void deleteTagByUserId(String userId) {
         List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
 
-        for(TagEntity tagEntity : tagEntityList) {
+        for (TagEntity tagEntity : tagEntityList) {
             Optional<ArticleTagEntity> optionalArticleTag = articleTagRepository.findByTagId(
-                tagEntity.getId());
+                    tagEntity.getId());
             if (optionalArticleTag.isEmpty()) {
                 tagRepository.delete(tagEntity);
             }
@@ -56,9 +57,15 @@ public class TagService {
         return tagList.stream().map(TagEntity::getName).collect(Collectors.toList());
     }
 
-    public List<String> findAllTagNameByUserId(String userId) {
+    public List<TagResDTO> findAllTagNameByUserId(String userId) {
         List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
-        return tagEntityList.stream().map(TagEntity::getName).collect(Collectors.toList());
+
+        return tagEntityList.stream()
+                .map(t -> TagResDTO.builder()
+                        .id(t.getId())
+                        .name(t.getName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }
