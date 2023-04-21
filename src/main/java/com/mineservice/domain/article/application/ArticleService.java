@@ -61,6 +61,7 @@ public class ArticleService {
                 .type(articleType)
                 .url(articleReqDTO.getUrl())
                 .favorite(articleReqDTO.isFavorite() ? "Y": "N")
+                .createBy(userId)
                 .build();
         articleRepository.save(articleEntity);
         log.info("article {}", articleEntity.toString());
