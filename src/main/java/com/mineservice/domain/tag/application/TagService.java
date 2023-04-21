@@ -56,4 +56,9 @@ public class TagService {
         return tagList.stream().map(TagEntity::getName).collect(Collectors.toList());
     }
 
+    public List<String> findAllTagNameByUserId(String userId) {
+        List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
+        return tagEntityList.stream().map(TagEntity::getName).collect(Collectors.toList());
+    }
+
 }
