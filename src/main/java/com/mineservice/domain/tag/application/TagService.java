@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,15 +58,22 @@ public class TagService {
         return tagList.stream().map(TagEntity::getName).collect(Collectors.toList());
     }
 
-    public List<TagResDTO> findAllTagNameByUserId(String userId) {
+    public List<String> findAllTagNameByUserId(String userId) {
         List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
+        return tagEntityList.stream().map(TagEntity::getName).collect(Collectors.toList());
+    }
 
-        return tagEntityList.stream()
-                .map(t -> TagResDTO.builder()
-                        .id(t.getId())
-                        .name(t.getName())
-                        .build())
-                .collect(Collectors.toList());
+    public TagResDTO findAllTagName(Long articleId, String userId) {
+        List<String> allTagNameByArticleId = new ArrayList<>();
+        if (articleId != null) {
+            allTagNameByArticleId = findAllTagNameByArticleId(articleId);
+        }
+        List<String> allTagNameByUserId = findAllTagNameByUserId(userId);
+
+        return TagResDTO.builder()
+                .tags(allTagNameByUserId)
+                .selectedTags(allTagNameByArticleId)
+                .build();
     }
 
 }
