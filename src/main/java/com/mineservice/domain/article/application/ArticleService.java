@@ -48,7 +48,7 @@ public class ArticleService {
                 articleReqDTO.setTitle(title + "(" + sameTitleArticleListEntity.size() + ")");
             }
         } else {
-            articleRepository.findArticleByUrl(articleReqDTO.getUrl())
+            articleRepository.findArticleByUrlAndUserId(articleReqDTO.getUrl(), userId)
                     .ifPresent(article -> {
                         throw new IllegalArgumentException("이미 등록된 링크입니다.");
                     });
