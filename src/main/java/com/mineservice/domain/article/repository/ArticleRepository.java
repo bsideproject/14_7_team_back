@@ -14,7 +14,7 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
 
     List<ArticleEntity> findArticlesByUserIdAndTitleStartingWith(String userId, String title);
 
-    Optional<ArticleEntity> findArticleByUrl(String url);
+    Optional<ArticleEntity> findArticleByUrlAndUserId(String url, String userId);
 
 
     @Query(value = "SELECT a.* " +
