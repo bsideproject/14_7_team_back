@@ -7,7 +7,7 @@ import com.mineservice.domain.user.repository.AccessTokenRepository;
 import com.mineservice.domain.user.repository.RefreshTokenRepository;
 import com.mineservice.domain.user.repository.UserInfoRepository;
 import com.mineservice.login.service.UserInfoService;
-import com.mineservice.login.vo.NaverUserInfo;
+import com.mineservice.login.vo.UserInfo;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public UserInfoEntity joinUser(String userId, NaverUserInfo userInfo) {
+    public UserInfoEntity joinUser(String userId, UserInfo userInfo) {
 
         AccessTokenEntity accessToken = AccessTokenEntity.builder()
             .userId(userId)

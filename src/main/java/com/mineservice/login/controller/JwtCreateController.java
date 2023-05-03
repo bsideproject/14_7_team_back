@@ -5,7 +5,7 @@ import com.mineservice.login.JwtTokenProvider;
 import com.mineservice.login.service.AccessTokenService;
 import com.mineservice.login.service.RefreshTokenService;
 import com.mineservice.login.service.UserInfoService;
-import com.mineservice.login.vo.NaverUserInfo;
+import com.mineservice.login.vo.UserInfo;
 import com.mineservice.login.vo.response.ResponseJwt;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class JwtCreateController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login/naver")
-    public ResponseEntity<ResponseJwt> jwtCreate(@RequestBody NaverUserInfo userInfo){
+    public ResponseEntity<ResponseJwt> jwtCreate(@RequestBody UserInfo userInfo){
 
         UserInfoEntity userEntity = userInfoService.getUser(userInfo.getId(), userInfo.getProvider());
 

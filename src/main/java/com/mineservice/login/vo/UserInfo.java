@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NaverUserInfo {
+public class UserInfo {
 
     private String id;
     private String accessToken;
