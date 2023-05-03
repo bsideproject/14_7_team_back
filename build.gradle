@@ -35,6 +35,7 @@ dependencies {
 	implementation 'com.nimbusds:oauth2-oidc-sdk:'
 	implementation 'com.nimbusds:nimbus-jose-jwt:3.10'
 	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
