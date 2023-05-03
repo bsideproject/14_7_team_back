@@ -2,51 +2,37 @@ package com.mineservice.login.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.crypto.ECDSASigner;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import java.io.FileReader;
-import java.io.IOException;
-import java.security.KeyFactory;
+import com.mineservice.domain.user.domain.UserInfoEntity;
+import com.mineservice.global.AppleLoginUtil;
+import com.mineservice.login.service.UserInfoService;
+import com.mineservice.login.vo.UserInfo;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemReader;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class AppleLoginController {
 
     private static final String TEAM_ID = "XQ24HP64B3";
@@ -55,6 +41,9 @@ public class AppleLoginController {
     private static final String KEY_ID = "5UUZ4LKXZF";
     private static final String AUTH_URL = "https://appleid.apple.com";
     private static final String KEY_PATH = "static/apple/AuthKey_5UUZ4LKXZF.p8";
+
+    private final AppleLoginUtil appleLoginUtil;
+    private final UserInfoService userInfoService;
 
     @GetMapping("/login/getAppleAuthUrl")
     public @ResponseBody String getAppleAuthUrl(HttpServletRequest request) {
@@ -66,17 +55,28 @@ public class AppleLoginController {
         return reqUrl;
     }
 
-    @GetMapping("/login/oauth_apple")
-    public String oauthApple(HttpServletRequest request,
-        @RequestParam(value = "code", required = false) String code,
+    @PostMapping("/login/oauth_apple")
+    public @ResponseBody String oauthApple(HttpServletRequest request,
+        @RequestParam(value = "code", required = false) String code, @RequestParam(value = "user", required = false) String user,
         HttpServletResponse response,
-        Model model) throws NoSuchAlgorithmException, JsonProcessingException {
+        Model model) throws NoSuchAlgorithmException, JsonProcessingException, ParseException {
         if(code == null){
             return "index.html";
         }
 
+        if(user != null){
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(user);
+            org.json.simple.JSONObject jsonObj = (org.json.simple.JSONObject) obj;
+            Object name = jsonObj.get("name");
+            org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) name;
+            String s = (String) jsonObject.get("firstName") + (String) jsonObject.get("lastName");
+
+            log.info((String) jsonObj.get("email"));
+        }
+
         String clientId = CLIENT_ID;
-        String clientSecret = createClientSecret(TEAM_ID, CLIENT_ID, KEY_ID, KEY_PATH, AUTH_URL);
+        String clientSecret = appleLoginUtil.createClientSecret(TEAM_ID, CLIENT_ID, KEY_ID, KEY_PATH, AUTH_URL);
 
         String reqUrl = AUTH_URL + "/auth/token";
         Map<String, String> tokenRequest = new HashMap<>();
@@ -85,14 +85,15 @@ public class AppleLoginController {
         tokenRequest.put("code", code);
         tokenRequest.put("grant_type", "authorization_code");
 
-        String apiResponse = doPost(reqUrl, tokenRequest);
+        String apiResponse = appleLoginUtil.doPost(reqUrl, tokenRequest);
 
         ObjectMapper objectMapper = new ObjectMapper();
         JSONObject tokenResponse = objectMapper.readValue(apiResponse, JSONObject.class);
 
         if(tokenResponse.get("error") == null){
-            JSONObject payload = decodeFromIdToken(tokenResponse.getAsString("id_token"));
+            JSONObject payload = appleLoginUtil.decodeFromIdToken(tokenResponse.getAsString("id_token"));
             String appleUniqueNo = payload.getAsString("sub");
+            userJoin(appleUniqueNo, tokenResponse, payload);
             return appleUniqueNo;
 
         }else{
@@ -100,113 +101,38 @@ public class AppleLoginController {
         }
     }
 
-    public String doPost(String url, Map<String, String> param) {
-        String result = null;
-        CloseableHttpClient httpclient = null;
-        CloseableHttpResponse response = null;
-        Integer statusCode = null;
-        String reasonPhrase = null;
-        try {
-            httpclient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(url);
-            httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-            List<NameValuePair> nvps = new ArrayList<>();
-            Set<Map.Entry<String, String>> entrySet = param.entrySet();
-            for (Map.Entry<String, String> entry : entrySet) {
-                String fieldName = entry.getKey();
-                String fieldValue = entry.getValue();
-                nvps.add(new BasicNameValuePair(fieldName, fieldValue));
-            }
-            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(nvps);
-            httpPost.setEntity(formEntity);
-            response = httpclient.execute(httpPost);
-            statusCode = response.getStatusLine().getStatusCode();
-            reasonPhrase = response.getStatusLine().getReasonPhrase();
-            HttpEntity entity = response.getEntity();
-            result = EntityUtils.toString(entity, "UTF-8");
+    private void userJoin(String appleUniqueNo, JSONObject tokenResponse, JSONObject payload) {
+        UserInfoEntity userEntity = userInfoService.getUser(appleUniqueNo, "apple");
 
-            if (statusCode != 200) {
-                log.error("[error] : " + result);
-            }
-            EntityUtils.consume(entity);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-                if (httpclient != null) {
-                    httpclient.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        String userId;
+        List<String> roles;
+        if(userEntity == null){ //최초 로그인 (회원가입)
+            userId = "user_" + UUID.randomUUID().toString();
+            LocalDateTime nowTime = LocalDateTime.now();
+
+            roles = Collections.singletonList("ROLE_USER");
+
+            long exp = Long.parseLong(payload.getAsString("exp")) * 1000;
+            Instant instant = Instant.ofEpochMilli(exp);
+            LocalDateTime expirationDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
+
+
+            UserInfo userInfo = new UserInfo();
+            userInfo.setAccessToken(tokenResponse.getAsString("access_token"));
+            userInfo.setRefreshToken(tokenResponse.getAsString("refresh_token"));
+            userInfo.setEmail(payload.getAsString("email"));
+            userInfo.setAccessTokenExpireDate(expirationDateTime);
+            userInfo.setProvider("apple");
+//            userInfo
+
+//            userInfoService.joinUser(userId, userInfo);
+        }else{//이미 회원일 경우
+            userId = userEntity.getId();
+            roles = userEntity.getRoles();
+
+            userInfoService.memberLogin(userEntity);
+//            accessTokenService.updateAccessTokenByMemberLogin(userId, userInfo);
+//            refreshTokenService.updateRefreshTokenByMemberLogin(userId, userInfo);
         }
-        return result;
     }
-
-    private String createClientSecret(String teamId, String clientId,
-        String keyId, String keyPath, String authUrl) throws NoSuchAlgorithmException {
-        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(keyId).build();
-        JWTClaimsSet claimsSet = new JWTClaimsSet();
-        Date now = new Date();
-
-        claimsSet.setIssuer(teamId);
-        claimsSet.setIssueTime(now);
-        claimsSet.setExpirationTime(new Date(now.getTime() + 3600000));
-        claimsSet.setAudience(authUrl);
-        claimsSet.setSubject(clientId);
-
-        SignedJWT jwt = new SignedJWT(header, claimsSet);
-
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(readPrivateKey(keyPath));
-        KeyFactory kf = KeyFactory.getInstance("EC");
-        try{
-            ECPrivateKey ecPrivateKey = (ECPrivateKey) kf.generatePrivate(spec);
-            JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey.getS());
-
-            jwt.sign(jwsSigner);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return jwt.serialize();
-    }
-
-    private byte[] readPrivateKey(String keyPath) {
-
-        Resource resource = new ClassPathResource(keyPath);
-        byte[] content = null;
-
-        try (FileReader keyReader = new FileReader(resource.getFile());
-            PemReader pemReader = new PemReader(keyReader)) {
-            {
-                PemObject pemObject = pemReader.readPemObject();
-                content = pemObject.getContent();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return content;
-    }
-
-    public JSONObject decodeFromIdToken(String id_token) {
-
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(id_token);
-            ReadOnlyJWTClaimsSet getPayload = signedJWT.getJWTClaimsSet();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JSONObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JSONObject.class);
-
-            if (payload != null) {
-                return payload;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
 }
