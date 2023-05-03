@@ -60,7 +60,7 @@ public class ArticleService {
                 .title(articleReqDTO.getTitle())
                 .type(articleType)
                 .url(articleReqDTO.getUrl())
-                .favorite(articleReqDTO.isFavorite() ? "Y": "N")
+                .favorite(articleReqDTO.isFavorite() ? "Y" : "N")
                 .createBy(userId)
                 .build();
         articleRepository.save(articleEntity);
@@ -113,16 +113,30 @@ public class ArticleService {
     }
 
     private ArticleDTO toDTO(ArticleEntity articleEntity) {
-        return ArticleDTO.builder()
-                .articleId(articleEntity.getId())
-                .title(articleEntity.getTitle())
-                .type(articleEntity.getType())
-                .favorite("Y".equals(articleEntity.getFavorite()))
-                .read("Y".equals(articleEntity.getReadYn()))
-                .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
-                .thumbUrl("localhost:8080/image/thumb/" + articleEntity.getId())
-                .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
-                .build();
+        String articleType = articleEntity.getType();
+        if ("image".equals(articleType)) {
+            return ArticleDTO.builder()
+                    .articleId(articleEntity.getId())
+                    .title(articleEntity.getTitle())
+                    .type(articleType)
+                    .favorite("Y".equals(articleEntity.getFavorite()))
+                    .read("Y".equals(articleEntity.getReadYn()))
+                    .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
+                    .thumbUrl("localhost:8080/image/thumb/" + articleEntity.getId())
+                    .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
+                    .build();
+        } else {
+            return ArticleDTO.builder()
+                    .articleId(articleEntity.getId())
+                    .title(articleEntity.getTitle())
+                    .type(articleType)
+                    .favorite("Y".equals(articleEntity.getFavorite()))
+                    .read("Y".equals(articleEntity.getReadYn()))
+                    .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
+                    .url(articleEntity.getUrl())
+                    .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
+                    .build();
+        }
     }
 
     @Transactional
