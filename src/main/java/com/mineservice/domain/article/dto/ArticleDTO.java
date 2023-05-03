@@ -18,6 +18,7 @@ public class ArticleDTO {
     private final boolean read; // 열람여부
     private final boolean alarm; // 알람여부
     private final String thumbUrl; // 썸네일 URL
+    private final String url; // 아티클 url
     private final List<String> tagNames; // 태그리스트
 
 }

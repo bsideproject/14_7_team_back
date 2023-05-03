@@ -3,7 +3,7 @@ spring:
     include: private-key
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: 'true'
@@ -15,10 +15,10 @@ spring:
       connection-timeout: '30000'
       max-lifetime: '55000'
       minimum-idle: '5'
-    driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     password: ''
-    username: root
-    url: jdbc:h2:mem:root
+    username: mineuser
+    url: jdbc:mysql://175.45.200.176:3306/mine
   h2:
     console:
       enabled: 'true'

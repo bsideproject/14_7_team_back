@@ -66,7 +66,7 @@ public class ArticleController {
 
         String userId = user.getUsername();
 
-        PageRequest pageRequest = PageRequest.of(page, 10).withSort("asc".equals(sort) ? Sort.Direction.ASC : Sort.Direction.DESC, "a.create_dt");
+        PageRequest pageRequest = PageRequest.of(page, 10).withSort("asc".equals(sort) ? Sort.Direction.ASC : Sort.Direction.DESC, "create_dt");
 
         ArticleResDTO articleList = articleService.findAllBySearch(title, favorite, readYn, types, tags, userId, pageRequest);
 
