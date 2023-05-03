@@ -4,6 +4,7 @@ import com.mineservice.domain.file_info.application.FileInfoService;
 import com.mineservice.domain.file_info.domain.FileInfoEntity;
 import com.mineservice.global.infra.object_storage.ObjectStorageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class FileInfoController {
 
     private final FileInfoService fileInfoService;
@@ -23,7 +25,7 @@ public class FileInfoController {
 
     @GetMapping("/image/thumb/{article_id}")
     public ResponseEntity<byte[]> thumbImage(@PathVariable("article_id") Long articleId, HttpServletResponse response) {
-
+        log.info("articleId : {}", articleId);
         FileInfoEntity fileInfo = fileInfoService.findOneByArticleId(articleId);
         if (fileInfo == null) {
             return ResponseEntity.badRequest().build();

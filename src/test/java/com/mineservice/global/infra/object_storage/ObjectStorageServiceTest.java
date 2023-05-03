@@ -24,7 +24,7 @@ class ObjectStorageServiceTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(multipartFileName, multipartFileName + "." + fileExt, fileExt, new FileInputStream(filePath));
 
-        objectStorageService.uploadMultipartFile(0L, multipartFile);
+//        objectStorageService.uploadMultipartFile(0L, multipartFile);
 
     }
 

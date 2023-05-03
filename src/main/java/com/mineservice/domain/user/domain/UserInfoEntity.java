@@ -7,16 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -79,12 +71,12 @@ public class UserInfoEntity implements UserDetails {
     @JoinColumn(name = "id")
     private UserAlarmEntity userAlarm;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id", insertable = false, updatable = false)
     private AccessTokenEntity accessToken;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id", insertable = false, updatable = false)
     private RefreshTokenEntity refreshToken;
 
     @Builder

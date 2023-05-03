@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "device")
+@Table(name = "device_token")
 public class DeviceToken {
 
     @Id
