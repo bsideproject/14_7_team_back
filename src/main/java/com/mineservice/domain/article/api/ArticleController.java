@@ -37,6 +37,7 @@ public class ArticleController {
         log.info("imgOrgName :{}", reqDTO.getImg() == null ? null : reqDTO.getImg().getOriginalFilename());
 
         String userId = user.getUsername();
+        log.info("userId :{}", userId);
 
         articleService.createArticle(userId, reqDTO);
 

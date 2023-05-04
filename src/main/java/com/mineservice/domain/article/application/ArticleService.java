@@ -40,12 +40,14 @@ public class ArticleService {
     public void createArticle(String userId, ArticleReqDTO articleReqDTO) {
         String articleType = getArticleType(articleReqDTO.getUrl());
         if ("image".equals(articleType)) {
-            String title = "MINE_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-            List<ArticleEntity> sameTitleArticleListEntity = articleRepository.findArticlesByUserIdAndTitleStartingWith(userId, title);
-            if (sameTitleArticleListEntity.isEmpty()) {
-                articleReqDTO.setTitle(title);
-            } else {
-                articleReqDTO.setTitle(title + "(" + sameTitleArticleListEntity.size() + ")");
+            if (articleReqDTO.getTitle() == null) {
+                String title = "MINE_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+                List<ArticleEntity> sameTitleArticleListEntity = articleRepository.findArticlesByUserIdAndTitleStartingWith(userId, title);
+                if (sameTitleArticleListEntity.isEmpty()) {
+                    articleReqDTO.setTitle(title);
+                } else {
+                    articleReqDTO.setTitle(title + "(" + sameTitleArticleListEntity.size() + ")");
+                }
             }
         } else {
             articleRepository.findArticleByUrlAndUserId(articleReqDTO.getUrl(), userId)
