@@ -79,19 +79,6 @@ public class UserInfoEntity implements UserDetails {
     @JoinColumn(name = "id", insertable = false, updatable = false)
     private RefreshTokenEntity refreshToken;
 
-    @Builder
-    public UserInfoEntity(String id, String provider, String uid, String userEmail, String userName, String modifyBy, LocalDateTime modifyDt, String createBy) {
-        this.id = id;
-        this.provider = provider;
-        this.uid = uid;
-        this.userEmail = userEmail;
-        this.userName = userName;
-        this.lastLoginDt = LocalDateTime.now();
-        this.modifyBy = modifyBy;
-        this.modifyDt = modifyDt;
-        this.createBy = createBy;
-        this.createDt = LocalDateTime.now();
-    }
 
     @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
     @CollectionTable(name = "user_info_role")

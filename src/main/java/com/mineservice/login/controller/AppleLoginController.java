@@ -4,24 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.global.AppleLoginUtil;
+import com.mineservice.login.JwtTokenProvider;
+import com.mineservice.login.service.AccessTokenService;
+import com.mineservice.login.service.RefreshTokenService;
 import com.mineservice.login.service.UserInfoService;
 import com.mineservice.login.vo.UserInfo;
-import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.mineservice.login.vo.response.ResponseJwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +24,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -44,27 +47,29 @@ public class AppleLoginController {
 
     private final AppleLoginUtil appleLoginUtil;
     private final UserInfoService userInfoService;
+    private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/login/getAppleAuthUrl")
-    public @ResponseBody String getAppleAuthUrl(HttpServletRequest request) {
+    public @ResponseBody
+    String getAppleAuthUrl(HttpServletRequest request) {
         String reqUrl = AUTH_URL + "/auth/authorize?client_id="
-            + CLIENT_ID
-            + "&redirect_uri="
-            + REDIRECT_URL
-            + "&response_type=code id_token&scope=name email&response_mode=form_post";
+                + CLIENT_ID
+                + "&redirect_uri="
+                + REDIRECT_URL
+                + "&response_type=code id_token&scope=name email&response_mode=form_post";
         return reqUrl;
     }
 
     @PostMapping("/login/oauth_apple")
-    public @ResponseBody String oauthApple(HttpServletRequest request,
-        @RequestParam(value = "code", required = false) String code, @RequestParam(value = "user", required = false) String user,
-        HttpServletResponse response,
-        Model model) throws NoSuchAlgorithmException, JsonProcessingException, ParseException {
-        if(code == null){
-            return "index.html";
-        }
+    public @ResponseBody
+    ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code, @RequestParam(value = "user", required = false) String user)
+            throws NoSuchAlgorithmException, JsonProcessingException, ParseException {
+        log.info("code : {}", code);
+        log.info("user : {}", user);
 
-        if(user != null){
+        if (user != null) {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(user);
             org.json.simple.JSONObject jsonObj = (org.json.simple.JSONObject) obj;
@@ -89,24 +94,31 @@ public class AppleLoginController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JSONObject tokenResponse = objectMapper.readValue(apiResponse, JSONObject.class);
+        log.info("tokenResponse : {}", tokenResponse.toString());
 
-        if(tokenResponse.get("error") == null){
+        if (tokenResponse.get("error") == null) {
             JSONObject payload = appleLoginUtil.decodeFromIdToken(tokenResponse.getAsString("id_token"));
-            String appleUniqueNo = payload.getAsString("sub");
-            userJoin(appleUniqueNo, tokenResponse, payload);
-            return appleUniqueNo;
 
-        }else{
+            log.info("payload : {}", payload.toString());
+
+            String appleUniqueNo = payload.getAsString("sub");
+            String jwt = userJoin(appleUniqueNo, tokenResponse, payload);
+            ResponseJwt responseJwt = new ResponseJwt();
+            responseJwt.setAccessToken(jwt);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(responseJwt);
+        } else {
             throw new UsernameNotFoundException("사용자 정보가 없습니다.");
         }
     }
 
-    private void userJoin(String appleUniqueNo, JSONObject tokenResponse, JSONObject payload) {
+    private String userJoin(String appleUniqueNo, JSONObject tokenResponse, JSONObject payload) {
         UserInfoEntity userEntity = userInfoService.getUser(appleUniqueNo, "apple");
 
         String userId;
         List<String> roles;
-        if(userEntity == null){ //최초 로그인 (회원가입)
+        if (userEntity == null) { //최초 로그인 (회원가입)
             userId = "user_" + UUID.randomUUID().toString();
             LocalDateTime nowTime = LocalDateTime.now();
 
@@ -118,21 +130,30 @@ public class AppleLoginController {
 
 
             UserInfo userInfo = new UserInfo();
+            userInfo.setId(appleUniqueNo);
             userInfo.setAccessToken(tokenResponse.getAsString("access_token"));
             userInfo.setRefreshToken(tokenResponse.getAsString("refresh_token"));
             userInfo.setEmail(payload.getAsString("email"));
             userInfo.setAccessTokenExpireDate(expirationDateTime);
             userInfo.setProvider("apple");
-//            userInfo
 
-//            userInfoService.joinUser(userId, userInfo);
-        }else{//이미 회원일 경우
+            userInfoService.joinUser(userId, userInfo);
+        } else {//이미 회원일 경우
             userId = userEntity.getId();
             roles = userEntity.getRoles();
 
             userInfoService.memberLogin(userEntity);
-//            accessTokenService.updateAccessTokenByMemberLogin(userId, userInfo);
-//            refreshTokenService.updateRefreshTokenByMemberLogin(userId, userInfo);
+
+            UserInfo userInfo = new UserInfo();
+            userInfo.setAccessToken(tokenResponse.getAsString("access_token"));
+            userInfo.setRefreshToken(tokenResponse.getAsString("refresh_token"));
+
+            accessTokenService.updateAccessTokenByMemberLogin(userId, userInfo);
+            refreshTokenService.updateRefreshTokenByMemberLogin(userId, userInfo);
         }
+
+        String jwt = jwtTokenProvider.generateJwt(userId, roles);
+
+        return jwt;
     }
 }
