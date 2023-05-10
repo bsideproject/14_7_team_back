@@ -1,12 +1,15 @@
 package com.mineservice.domain.article.api;
 
 import com.mineservice.domain.article.application.ArticleService;
+import com.mineservice.domain.article.dto.ArticleDTO;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
 import com.mineservice.domain.tag.application.TagService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -74,6 +77,22 @@ public class ArticleController {
         log.info("article list: {}", articleList.toString());
         return ResponseEntity.ok(articleList);
     }
+
+    @GetMapping("/article/{id}")
+    @ApiOperation(value = "아티클 상세 불러오기")
+    @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "java.lang.Long", paramType = "path", example = "1")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우")
+    )
+    public ResponseEntity<ArticleDTO> getArticle(@PathVariable Long id, @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+        log.info("findArticle id :{}", id);
+        String userId = user.getUsername();
+
+        ArticleDTO article = articleService.findArticleById(id, userId);
+
+        return ResponseEntity.ok(article);
+    }
+
 
     @DeleteMapping("/articles/{id}")
     @ApiOperation(value = "아티클 삭제")

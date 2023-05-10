@@ -8,18 +8,6 @@ import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import java.io.FileReader;
-import java.io.IOException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.apache.http.HttpEntity;
@@ -37,14 +25,19 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.interfaces.ECPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.*;
+import java.util.Map.Entry;
+
 @Component
 @Slf4j
 public class AppleLoginUtil {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-    public String createClientSecret(String teamId, String clientId,
-        String keyId, String keyPath, String authUrl) throws NoSuchAlgorithmException {
+    public String createClientSecret(String teamId, String clientId, String keyId, String keyPath, String authUrl) {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(keyId).build();
         JWTClaimsSet claimsSet = new JWTClaimsSet();
         Date now = new Date();
@@ -57,9 +50,9 @@ public class AppleLoginUtil {
 
         SignedJWT jwt = new SignedJWT(header, claimsSet);
 
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(readPrivateKey(keyPath));
-        KeyFactory kf = KeyFactory.getInstance("EC");
-        try{
+        try {
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(readPrivateKey(keyPath));
+            KeyFactory kf = KeyFactory.getInstance("EC");
             ECPrivateKey ecPrivateKey = (ECPrivateKey) kf.generatePrivate(spec);
             JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey.getS());
 
@@ -77,11 +70,10 @@ public class AppleLoginUtil {
         byte[] content = null;
 
         try (FileReader keyReader = new FileReader(resource.getFile());
-            PemReader pemReader = new PemReader(keyReader)) {
-            {
-                PemObject pemObject = pemReader.readPemObject();
-                content = pemObject.getContent();
-            }
+             PemReader pemReader = new PemReader(keyReader)) {
+
+            PemObject pemObject = pemReader.readPemObject();
+            content = pemObject.getContent();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,10 +127,10 @@ public class AppleLoginUtil {
         return result;
     }
 
-    public JSONObject decodeFromIdToken(String id_token) {
+    public JSONObject decodeFromIdToken(String idToken) {
 
         try {
-            SignedJWT signedJWT = SignedJWT.parse(id_token);
+            SignedJWT signedJWT = SignedJWT.parse(idToken);
             ReadOnlyJWTClaimsSet getPayload = signedJWT.getJWTClaimsSet();
             ObjectMapper objectMapper = new ObjectMapper();
             JSONObject payload = objectMapper.readValue(getPayload.toJSONObject().toJSONString(), JSONObject.class);

@@ -10,30 +10,25 @@ import com.mineservice.login.service.RefreshTokenService;
 import com.mineservice.login.service.UserInfoService;
 import com.mineservice.login.vo.UserInfo;
 import com.mineservice.login.vo.response.ResponseJwt;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-@Controller
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 public class AppleLoginController {
@@ -52,8 +47,7 @@ public class AppleLoginController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/login/getAppleAuthUrl")
-    public @ResponseBody
-    String getAppleAuthUrl(HttpServletRequest request) {
+    public String getAppleAuthUrl(HttpServletRequest request) {
         String reqUrl = AUTH_URL + "/auth/authorize?client_id="
                 + CLIENT_ID
                 + "&redirect_uri="
@@ -63,22 +57,9 @@ public class AppleLoginController {
     }
 
     @PostMapping("/login/oauth_apple")
-    public @ResponseBody
-    ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code, @RequestParam(value = "user", required = false) String user)
-            throws NoSuchAlgorithmException, JsonProcessingException, ParseException {
+    @ApiOperation(value = "애플 로그인")
+    public ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code) throws JsonProcessingException {
         log.info("code : {}", code);
-        log.info("user : {}", user);
-
-        if (user != null) {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(user);
-            org.json.simple.JSONObject jsonObj = (org.json.simple.JSONObject) obj;
-            Object name = jsonObj.get("name");
-            org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) name;
-            String s = (String) jsonObject.get("firstName") + (String) jsonObject.get("lastName");
-
-            log.info((String) jsonObj.get("email"));
-        }
 
         String clientId = CLIENT_ID;
         String clientSecret = appleLoginUtil.createClientSecret(TEAM_ID, CLIENT_ID, KEY_ID, KEY_PATH, AUTH_URL);
@@ -103,11 +84,11 @@ public class AppleLoginController {
 
             String appleUniqueNo = payload.getAsString("sub");
             String jwt = userJoin(appleUniqueNo, tokenResponse, payload);
+            log.info("created JWT Token : {}", jwt);
             ResponseJwt responseJwt = new ResponseJwt();
             responseJwt.setAccessToken(jwt);
 
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(responseJwt);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseJwt);
         } else {
             throw new UsernameNotFoundException("사용자 정보가 없습니다.");
         }
@@ -115,19 +96,19 @@ public class AppleLoginController {
 
     private String userJoin(String appleUniqueNo, JSONObject tokenResponse, JSONObject payload) {
         UserInfoEntity userEntity = userInfoService.getUser(appleUniqueNo, "apple");
+        log.info("getUser : {}", userEntity.toString());
 
         String userId;
         List<String> roles;
         if (userEntity == null) { //최초 로그인 (회원가입)
             userId = "user_" + UUID.randomUUID().toString();
-            LocalDateTime nowTime = LocalDateTime.now();
+            log.info("회원가입 userId : {}", userId);
 
             roles = Collections.singletonList("ROLE_USER");
 
             long exp = Long.parseLong(payload.getAsString("exp")) * 1000;
             Instant instant = Instant.ofEpochMilli(exp);
             LocalDateTime expirationDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
-
 
             UserInfo userInfo = new UserInfo();
             userInfo.setId(appleUniqueNo);
@@ -141,6 +122,7 @@ public class AppleLoginController {
         } else {//이미 회원일 경우
             userId = userEntity.getId();
             roles = userEntity.getRoles();
+            log.info("기존회원 userId : {}", userId);
 
             userInfoService.memberLogin(userEntity);
 
@@ -152,8 +134,6 @@ public class AppleLoginController {
             refreshTokenService.updateRefreshTokenByMemberLogin(userId, userInfo);
         }
 
-        String jwt = jwtTokenProvider.generateJwt(userId, roles);
-
-        return jwt;
+        return jwtTokenProvider.generateJwt(userId, roles);
     }
 }

@@ -16,8 +16,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -112,6 +114,16 @@ public class ArticleService {
                 .totalPageSize(articleDTOPage.getTotalPages())
                 .articleList(articleDTOPage.getContent())
                 .build();
+    }
+
+    public ArticleDTO findArticleById(Long articleId, String userId) {
+        ArticleEntity articleEntity = articleRepository.findArticleByIdAndUserId(articleId, userId);
+        if (articleEntity == null) {
+            log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클이 없습니다.");
+        }
+        log.info("articleEntity : {}", articleEntity.toString());
+        return toDTO(articleEntity);
     }
 
     private ArticleDTO toDTO(ArticleEntity articleEntity) {
