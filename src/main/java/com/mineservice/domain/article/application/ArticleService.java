@@ -102,8 +102,8 @@ public class ArticleService {
     }
 
     public ArticleResDTO findAllBySearch(String title, boolean favorite, boolean readYn, List<String> types, List<String> tags, String userId, Pageable pageable) {
-        String favoriteStr = favorite ? "Y" : "N";
-        String readYnStr = readYn ? "Y" : "N";
+        String favoriteStr = favorite ? "Y" : null;
+        String readYnStr = readYn ? "N" : null;
 
         Page<ArticleEntity> allBySearch = articleRepository.findAllBySearch(title, favoriteStr, readYnStr, types, tags, userId, pageable);
         Page<ArticleDTO> articleDTOPage = allBySearch.map(this::toDTO);
