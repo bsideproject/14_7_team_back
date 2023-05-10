@@ -78,11 +78,11 @@ public class ArticleController {
         return ResponseEntity.ok(articleList);
     }
 
-    @GetMapping("/article/{id}")
+    @GetMapping("/articles/{id}")
     @ApiOperation(value = "아티클 상세 불러오기")
     @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "java.lang.Long", paramType = "path", example = "1")
     @ApiResponses(
-            @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우")
+            @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우 (존재하지 않았거나 삭제한 경우)")
     )
     public ResponseEntity<ArticleDTO> getArticle(@PathVariable Long id, @ApiIgnore @AuthenticationPrincipal UserDetails user) {
         log.info("findArticle id :{}", id);
@@ -91,6 +91,13 @@ public class ArticleController {
         ArticleDTO article = articleService.findArticleById(id, userId);
 
         return ResponseEntity.ok(article);
+    }
+
+    @PutMapping("/articles")
+    public ResponseEntity<String> modifyArticle() {
+
+
+        return ResponseEntity.ok().build();
     }
 
 

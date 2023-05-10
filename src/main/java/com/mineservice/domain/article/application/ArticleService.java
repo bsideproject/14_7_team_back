@@ -122,6 +122,11 @@ public class ArticleService {
             log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클이 없습니다.");
         }
+        if ("N".equals(articleEntity.getUseYn())) {
+            log.error("해당하는 아티클은 삭제되었습니다 [articleId: {}, userId : {}]", articleId, userId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클은 삭제되었습니다.");
+        }
+
         log.info("articleEntity : {}", articleEntity.toString());
         return toDTO(articleEntity);
     }
@@ -136,7 +141,7 @@ public class ArticleService {
                     .favorite("Y".equals(articleEntity.getFavorite()))
                     .read("Y".equals(articleEntity.getReadYn()))
                     .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
-                    .thumbUrl("localhost:8080/image/thumb/" + articleEntity.getId())
+                    .thumbUrl("https://mine.directory/image/thumb/" + articleEntity.getId())
                     .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
                     .build();
         } else {
