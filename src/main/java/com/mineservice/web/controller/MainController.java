@@ -17,4 +17,11 @@ public class MainController {
         log.info("index.html");
         return "/index.html";
     }
+
+    @RequestMapping("/introduction")
+    public String introduction() {
+        log.info("introduction.html");
+        return "/introduction.html";
+    }
+
 }

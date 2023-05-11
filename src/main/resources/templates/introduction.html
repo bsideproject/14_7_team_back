@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MINE 이 처음이신가요?</title>
+</head>
+
+<style>
+    @font-face {
+        font-family: 'LINESeedKR-Bd';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 100%, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translateZ(0);
+        }
+    }
+
+    @keyframes gradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    body {
+        font-family: 'LINESeedKR-Bd', serif;
+        /*background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);*/
+        /*background-size: 400% 400%;*/
+        /*animation: gradient 15s ease infinite;*/
+        /*height: 100vh;*/
+        /*-ms-overflow-style: none; !* 인터넷 익스플로러 *!*/
+        /*scrollbar-width: none; !* 파이어폭스 *!*/
+        /*overflow: hidden;*/
+    }
+
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+    .content_wrap {
+        margin: auto;
+        /*text-align: center;*/
+    }
+
+    .logo {
+
+        size: 200%;
+    }
+
+    .content {
+        /*font-size: 50px;*/
+        animation: fadeInUp 2s;
+    }
+</style>
+
+<body>
+    <div class="content_wrap">
+        <div class="title">
+            <h1>MINE이 처음이신가요?</h1>
+        </div>
+        <div class="content">
+            <ul>
+                <li><a href="#what's">MINE은 어떤 서비스인가요?</a></li>
+            </ul>
+
+            <div id="what's">
+                <h3>MINE은 어떤 서비스인가요?</h3>
+                <span>
+                    바쁜 현대 사회, 봐야할 콘텐츠는 많지만 우리의 시간은 한정적이기에 콘텐츠를 보는 우선순위가 생길 수 밖에 없지요.<br>
+                    그래서 다음에 보고 싶은 혹은 꼭 봐야할 뉴스, 아티클, 영상 등을 어딘가에 여러 방법으로 스크랩합니다.<br>
+                    하지만 나중에 다시 찾으려고 하면 어디에 저장했는지 잊는 경우도 있고 혹은 저장한 사실 자체를 잊는 경우가 생기곤해요.<br>
+                    MINE은 이런 불편함을 해소하기 위해 만들어진 콘텐츠 저장소입니다! 쉽게 콘텐츠를 스크랩하고, 쉽게 찾고, 잊지 않도록 챙겨드려요.
+                </span>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
