@@ -45,9 +45,8 @@ public class TagService {
         List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
 
         for (TagEntity tagEntity : tagEntityList) {
-            Optional<ArticleTagEntity> optionalArticleTag = articleTagRepository.findByTagId(
-                    tagEntity.getId());
-            if (optionalArticleTag.isEmpty()) {
+            List<ArticleTagEntity> articleTagList = articleTagRepository.findAllByTagId(tagEntity.getId());
+            if (articleTagList.isEmpty()) {
                 tagRepository.delete(tagEntity);
             }
         }

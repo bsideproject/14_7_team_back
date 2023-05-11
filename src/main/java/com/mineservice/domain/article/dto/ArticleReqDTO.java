@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(exclude = "img")
-@ApiModel(value = "링크 등록 요청 객체")
+@ApiModel(value = "아티클 등록 요청 객체")
 public class ArticleReqDTO {
 
     @ApiModelProperty(value = "제목", example = "테스트")
@@ -27,7 +27,7 @@ public class ArticleReqDTO {
     @ApiModelProperty(value = "이미지", example = "image.png")
     private MultipartFile img = null;
 
-    @ApiModelProperty(value = "즐겨찾기(Y/N)", example = "false")
+    @ApiModelProperty(value = "즐겨찾기", example = "false")
     private boolean favorite = false;
 
     @ApiModelProperty(value = "태그리스트", example = "[태그1, 태그2]")

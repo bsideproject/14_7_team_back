@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @ToString(exclude = {"userInfo", "articleTag", "fileInfoEntities", "articleAlarm"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

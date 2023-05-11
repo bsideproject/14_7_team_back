@@ -3,6 +3,7 @@ package com.mineservice.domain.article.application;
 import com.mineservice.domain.article.domain.ArticleAlarm;
 import com.mineservice.domain.article.domain.ArticleEntity;
 import com.mineservice.domain.article.dto.ArticleDTO;
+import com.mineservice.domain.article.dto.ArticleModDTO;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
 import com.mineservice.domain.article.repository.ArticleAlarmRepository;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -117,11 +119,13 @@ public class ArticleService {
     }
 
     public ArticleDTO findArticleById(Long articleId, String userId) {
-        ArticleEntity articleEntity = articleRepository.findArticleByIdAndUserId(articleId, userId);
-        if (articleEntity == null) {
+        Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
+        if (optionalArticle.isEmpty()) {
             log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클이 없습니다.");
         }
+
+        ArticleEntity articleEntity = optionalArticle.get();
         if ("N".equals(articleEntity.getUseYn())) {
             log.error("해당하는 아티클은 삭제되었습니다 [articleId: {}, userId : {}]", articleId, userId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클은 삭제되었습니다.");
@@ -156,6 +160,86 @@ public class ArticleService {
                     .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
                     .build();
         }
+    }
+
+    @Transactional
+    public void modifyArticle(ArticleModDTO dto, String userId) {
+        Long articleId = dto.getArticleId();
+        String title = dto.getTitle();
+        Boolean favorite = dto.getFavorite();
+        Boolean read = dto.getRead();
+        Boolean alarm = dto.getAlarm();
+        LocalDateTime alarmTime = dto.getAlarmTime();
+        List<String> tags = dto.getTags();
+
+        Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
+        if (optionalArticle.isEmpty()) {
+            log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클이 없습니다.");
+        }
+
+        ArticleEntity articleEntity = optionalArticle.get();
+
+        if (title != null) {
+            articleEntity.setTitle(title);
+        }
+
+        if (favorite != null) {
+            if (Boolean.TRUE.equals(favorite)) {
+                articleEntity.setFavorite("Y");
+            } else {
+                articleEntity.setFavorite("N");
+            }
+        }
+
+        if (read != null) {
+            if (Boolean.TRUE.equals(read)) {
+                articleEntity.setReadYn("Y");
+            } else {
+                articleEntity.setReadYn("N");
+            }
+        }
+
+        if (alarm != null) {
+            if (Boolean.TRUE.equals(alarm)) {
+                Optional<ArticleAlarm> optionalArticleAlarm = articleAlarmRepository.findOneByArticleId(articleId);
+                if (optionalArticleAlarm.isPresent()) {
+                    articleAlarmRepository.save(ArticleAlarm.builder()
+                            .articleId(articleId)
+                            .time(alarmTime)
+                            .build());
+                } else {
+                    articleAlarmRepository.save(ArticleAlarm.builder()
+                            .articleId(articleId)
+                            .time(alarmTime)
+                            .createBy(userId)
+                            .createDt(LocalDateTime.now())
+                            .build());
+                }
+            } else {
+                articleAlarmRepository.deleteByArticleId(articleId);
+            }
+        }
+
+        if (tags != null && !tags.isEmpty()) {
+            articleTagRepository.deleteByArticleId(articleId);
+            List<ArticleTagEntity> articleTagEntityList = new ArrayList<>();
+            for (String tagName : tags) {
+                TagEntity tagEntity = tagService.createTagByArticle(userId, tagName);
+                articleTagEntityList.add(ArticleTagEntity.builder()
+                        .article(articleEntity)
+                        .tag(tagEntity)
+                        .build());
+                log.info("tag {}", tagEntity.toString());
+            }
+            articleTagRepository.saveAll(articleTagEntityList);
+        } else {
+            articleTagRepository.deleteByArticleId(articleId);
+        }
+
+        articleEntity.setModifyBy(userId);
+        articleEntity.setModifyDt(LocalDateTime.now());
+        articleRepository.save(articleEntity);
     }
 
     @Transactional

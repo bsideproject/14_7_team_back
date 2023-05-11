@@ -2,6 +2,7 @@ package com.mineservice.domain.article.api;
 
 import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.dto.ArticleDTO;
+import com.mineservice.domain.article.dto.ArticleModDTO;
 import com.mineservice.domain.article.dto.ArticleReqDTO;
 import com.mineservice.domain.article.dto.ArticleResDTO;
 import com.mineservice.domain.tag.application.TagService;
@@ -94,8 +95,16 @@ public class ArticleController {
     }
 
     @PutMapping("/articles")
-    public ResponseEntity<String> modifyArticle() {
+    @ApiOperation(value = "아티클 수정")
+    public ResponseEntity<String> modifyArticle(@RequestBody ArticleModDTO dto,
+                                                @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+        log.info("modifyArticle : {}", dto.toString());
 
+        String userId = user.getUsername();
+
+        articleService.modifyArticle(dto, userId);
+
+        tagService.deleteTagByUserId(userId);
 
         return ResponseEntity.ok().build();
     }
