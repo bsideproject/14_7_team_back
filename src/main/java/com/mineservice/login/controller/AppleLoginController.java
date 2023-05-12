@@ -104,7 +104,6 @@ public class AppleLoginController {
 
     private String userJoin(String appleUniqueNo, String userName, JSONObject tokenResponse, JSONObject payload) {
         UserInfoEntity userEntity = userInfoService.getUser(appleUniqueNo, "apple");
-        log.info("getUser : {}", userEntity.toString());
 
         String userId;
         List<String> roles;
@@ -129,6 +128,7 @@ public class AppleLoginController {
 
             userInfoService.joinUser(userId, userInfo);
         } else {//이미 회원일 경우
+            log.info("getUser : {}", userEntity.toString());
             userId = userEntity.getId();
             roles = userEntity.getRoles();
             log.info("기존회원 userId : {}", userId);
