@@ -58,6 +58,7 @@ public class AppleLoginUtil {
 
             jwt.sign(jwsSigner);
         } catch (Exception e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
         return jwt.serialize();
@@ -75,6 +76,7 @@ public class AppleLoginUtil {
             PemObject pemObject = pemReader.readPemObject();
             content = pemObject.getContent();
         } catch (IOException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
 
@@ -111,6 +113,7 @@ public class AppleLoginUtil {
             }
             EntityUtils.consume(entity);
         } catch (Exception e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         } finally {
             try {
@@ -121,6 +124,7 @@ public class AppleLoginUtil {
                     httpclient.close();
                 }
             } catch (Exception e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -139,6 +143,7 @@ public class AppleLoginUtil {
                 return payload;
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
 

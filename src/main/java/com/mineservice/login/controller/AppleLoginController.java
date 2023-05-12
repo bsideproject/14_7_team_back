@@ -10,6 +10,8 @@ import com.mineservice.login.service.RefreshTokenService;
 import com.mineservice.login.service.UserInfoService;
 import com.mineservice.login.vo.UserInfo;
 import com.mineservice.login.vo.response.ResponseJwt;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class AppleLoginController {
     private static final String TEAM_ID = "XQ24HP64B3";
     private static final String REDIRECT_URL = "https://mine.directory/login/oauth_apple";
     private static final String CLIENT_ID = "com.bside.Mine.services";
+    private static final String BUNDLE_ID = "com.bside.Mine";
     private static final String KEY_ID = "5UUZ4LKXZF";
     private static final String AUTH_URL = "https://appleid.apple.com";
     private static final String KEY_PATH = "static/apple/AuthKey_5UUZ4LKXZF.p8";
@@ -49,7 +52,7 @@ public class AppleLoginController {
     @GetMapping("/login/getAppleAuthUrl")
     public String getAppleAuthUrl(HttpServletRequest request) {
         String reqUrl = AUTH_URL + "/auth/authorize?client_id="
-                + CLIENT_ID
+                + BUNDLE_ID
                 + "&redirect_uri="
                 + REDIRECT_URL
                 + "&response_type=code id_token&scope=name email&response_mode=form_post";
@@ -58,15 +61,20 @@ public class AppleLoginController {
 
     @PostMapping("/login/oauth_apple")
     @ApiOperation(value = "애플 로그인")
-    public ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code) throws JsonProcessingException {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "code", value = "code", dataType = "java.lang.String", paramType = "query"),
+            @ApiImplicitParam(name = "userName", value = "사용자 이름", dataType = "java.lang.String", paramType = "query")
+    })
+    public ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code,
+                                                  @RequestParam(value = "userName", required = false) String userName) throws JsonProcessingException {
         log.info("code : {}", code);
+        log.info("userName : {}", userName);
 
-        String clientId = CLIENT_ID;
-        String clientSecret = appleLoginUtil.createClientSecret(TEAM_ID, CLIENT_ID, KEY_ID, KEY_PATH, AUTH_URL);
+        String clientSecret = appleLoginUtil.createClientSecret(TEAM_ID, BUNDLE_ID, KEY_ID, KEY_PATH, AUTH_URL);
 
         String reqUrl = AUTH_URL + "/auth/token";
         Map<String, String> tokenRequest = new HashMap<>();
-        tokenRequest.put("client_id", clientId);
+        tokenRequest.put("client_id", BUNDLE_ID);
         tokenRequest.put("client_secret", clientSecret);
         tokenRequest.put("code", code);
         tokenRequest.put("grant_type", "authorization_code");
@@ -83,7 +91,7 @@ public class AppleLoginController {
             log.info("payload : {}", payload.toString());
 
             String appleUniqueNo = payload.getAsString("sub");
-            String jwt = userJoin(appleUniqueNo, tokenResponse, payload);
+            String jwt = userJoin(appleUniqueNo, userName, tokenResponse, payload);
             log.info("created JWT Token : {}", jwt);
             ResponseJwt responseJwt = new ResponseJwt();
             responseJwt.setAccessToken(jwt);
@@ -94,7 +102,7 @@ public class AppleLoginController {
         }
     }
 
-    private String userJoin(String appleUniqueNo, JSONObject tokenResponse, JSONObject payload) {
+    private String userJoin(String appleUniqueNo, String userName, JSONObject tokenResponse, JSONObject payload) {
         UserInfoEntity userEntity = userInfoService.getUser(appleUniqueNo, "apple");
         log.info("getUser : {}", userEntity.toString());
 
@@ -117,6 +125,7 @@ public class AppleLoginController {
             userInfo.setEmail(payload.getAsString("email"));
             userInfo.setAccessTokenExpireDate(expirationDateTime);
             userInfo.setProvider("apple");
+            userInfo.setName(userName);
 
             userInfoService.joinUser(userId, userInfo);
         } else {//이미 회원일 경우
