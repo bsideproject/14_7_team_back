@@ -2,9 +2,11 @@ package com.mineservice.domain.user.service.impl;
 
 import com.mineservice.domain.user.domain.AccessTokenEntity;
 import com.mineservice.domain.user.domain.RefreshTokenEntity;
+import com.mineservice.domain.user.domain.UserAlarmEntity;
 import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.domain.user.repository.AccessTokenRepository;
 import com.mineservice.domain.user.repository.RefreshTokenRepository;
+import com.mineservice.domain.user.repository.UserAlarmRepository;
 import com.mineservice.domain.user.repository.UserInfoRepository;
 import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserInfo;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class UserInfoServiceImpl implements UserInfoService {
 
     private final UserInfoRepository userInfoRepository;
+    private final UserAlarmRepository userAlarmRepository;
     private final AccessTokenRepository accessTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     @Override
@@ -45,6 +48,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             .build();
 
         refreshTokenRepository.save(refreshToken);
+
+        UserAlarmEntity userAlarm = UserAlarmEntity.builder()
+                .userId(userId)
+                .notiYn("N")
+                .createBy(userId)
+                .createDt(LocalDateTime.now())
+                .build();
+        userAlarmRepository.save(userAlarm);
 
         UserInfoEntity entity = UserInfoEntity.builder()
             .id(userId)

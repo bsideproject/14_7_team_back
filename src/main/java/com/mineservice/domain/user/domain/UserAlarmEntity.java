@@ -1,17 +1,17 @@
 package com.mineservice.domain.user.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
+@Setter
 @Entity
 @ToString
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_alarm")
 public class UserAlarmEntity {
@@ -21,6 +21,9 @@ public class UserAlarmEntity {
     private String userId;
 
     private String frequency;
+
+    @Column(name = "noti_yn")
+    private String notiYn;
 
     private LocalTime time;
 

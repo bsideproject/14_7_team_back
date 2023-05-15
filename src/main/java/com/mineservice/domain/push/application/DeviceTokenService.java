@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,10 @@ public class DeviceTokenService {
     private final DeviceTokenRepository deviceTokenRepository;
 
     public void registerToken(String deviceToken, String userId) {
+
+        Optional<DeviceToken> optionalDeviceToken = deviceTokenRepository.findByUserId(userId);
+        optionalDeviceToken.ifPresent(deviceTokenRepository::delete);
+
         DeviceToken token = DeviceToken.builder()
                 .token(deviceToken)
                 .userId(userId)

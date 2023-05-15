@@ -2,6 +2,7 @@ package com.mineservice.domain.push.api;
 
 import com.mineservice.domain.push.application.DeviceTokenService;
 import com.mineservice.domain.push.application.PushNotiService;
+import com.mineservice.domain.push.dto.DeviceTokenReqDTO;
 import com.mineservice.domain.push.dto.PushNotiResDTO;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +38,13 @@ public class PushNotiController {
 
     @PostMapping("/device-token")
     @ApiOperation(value = "푸시 발송을 위한 토큰 등록")
-    public ResponseEntity<String> registerDeviceToken(@RequestBody String deviceToken,
+    public ResponseEntity<String> registerDeviceToken(@RequestBody DeviceTokenReqDTO tokenReqDTO,
                                                       @ApiIgnore @AuthenticationPrincipal UserDetails user) {
         log.info("userId : {}", user.getUsername());
-        log.info("deviceToken : {}", deviceToken);
+        log.info("tokenReqDTO : {}", tokenReqDTO);
         String userId = user.getUsername();
 
-        deviceTokenService.registerToken(deviceToken, userId);
+        deviceTokenService.registerToken(tokenReqDTO.getDeviceToken(), userId);
 
         return ResponseEntity.ok().build();
     }
