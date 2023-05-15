@@ -1,4 +1,4 @@
-package com.mineservice.login.service;
+package com.mineservice.domain.user.service;
 
 import com.mineservice.domain.user.repository.UserInfoRepository;
 import lombok.RequiredArgsConstructor;

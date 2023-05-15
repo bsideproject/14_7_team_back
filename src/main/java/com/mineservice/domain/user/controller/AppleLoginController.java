@@ -1,15 +1,15 @@
-package com.mineservice.login.controller;
+package com.mineservice.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.global.AppleLoginUtil;
-import com.mineservice.login.JwtTokenProvider;
-import com.mineservice.login.service.AccessTokenService;
-import com.mineservice.login.service.RefreshTokenService;
-import com.mineservice.login.service.UserInfoService;
-import com.mineservice.login.vo.UserInfo;
-import com.mineservice.login.vo.response.ResponseJwt;
+import com.mineservice.domain.user.JwtTokenProvider;
+import com.mineservice.domain.user.service.AccessTokenService;
+import com.mineservice.domain.user.service.RefreshTokenService;
+import com.mineservice.domain.user.service.UserInfoService;
+import com.mineservice.domain.user.vo.UserInfo;
+import com.mineservice.domain.user.vo.response.ResponseJwt;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -19,12 +19,10 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,16 +46,6 @@ public class AppleLoginController {
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
-
-    @GetMapping("/login/getAppleAuthUrl")
-    public String getAppleAuthUrl(HttpServletRequest request) {
-        String reqUrl = AUTH_URL + "/auth/authorize?client_id="
-                + BUNDLE_ID
-                + "&redirect_uri="
-                + REDIRECT_URL
-                + "&response_type=code id_token&scope=name email&response_mode=form_post";
-        return reqUrl;
-    }
 
     @PostMapping("/login/oauth_apple")
     @ApiOperation(value = "애플 로그인")

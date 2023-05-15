@@ -1,12 +1,12 @@
-package com.mineservice.login.controller;
+package com.mineservice.domain.user.controller;
 
 import com.mineservice.domain.user.domain.UserInfoEntity;
-import com.mineservice.login.JwtTokenProvider;
-import com.mineservice.login.service.AccessTokenService;
-import com.mineservice.login.service.RefreshTokenService;
-import com.mineservice.login.service.UserInfoService;
-import com.mineservice.login.vo.UserInfo;
-import com.mineservice.login.vo.response.ResponseJwt;
+import com.mineservice.domain.user.JwtTokenProvider;
+import com.mineservice.domain.user.service.AccessTokenService;
+import com.mineservice.domain.user.service.RefreshTokenService;
+import com.mineservice.domain.user.service.UserInfoService;
+import com.mineservice.domain.user.vo.UserInfo;
+import com.mineservice.domain.user.vo.response.ResponseJwt;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,6 @@ public class NaverLoginController {
         log.info("request : {}", userInfo.toString());
 
         UserInfoEntity userEntity = userInfoService.getUser(userInfo.getId(), userInfo.getProvider());
-        log.info("getUser : {}", userEntity.toString());
 
         String userId;
         List<String> roles;
@@ -48,6 +47,7 @@ public class NaverLoginController {
 
             userInfoService.joinUser(userId, userInfo);
         } else {//이미 회원일 경우
+            log.info("getUser : {}", userEntity.toString());
             userId = userEntity.getId();
             roles = userEntity.getRoles();
             log.info("기존회원 userId : {}", userId);

@@ -1,4 +1,4 @@
-package com.mineservice.login.vo;
+package com.mineservice.domain.user.vo;
 
 import java.time.LocalDateTime;
 

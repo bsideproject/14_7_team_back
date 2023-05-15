@@ -1,6 +1,6 @@
-package com.mineservice.login.filter;
+package com.mineservice.domain.user.filter;
 
-import com.mineservice.login.JwtTokenProvider;
+import com.mineservice.domain.user.JwtTokenProvider;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

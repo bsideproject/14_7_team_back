@@ -1,4 +1,4 @@
-package com.mineservice.login.service.impl;
+package com.mineservice.domain.user.service.impl;
 
 import com.mineservice.domain.user.domain.AccessTokenEntity;
 import com.mineservice.domain.user.domain.RefreshTokenEntity;
@@ -6,8 +6,8 @@ import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.domain.user.repository.AccessTokenRepository;
 import com.mineservice.domain.user.repository.RefreshTokenRepository;
 import com.mineservice.domain.user.repository.UserInfoRepository;
-import com.mineservice.login.service.UserInfoService;
-import com.mineservice.login.vo.UserInfo;
+import com.mineservice.domain.user.service.UserInfoService;
+import com.mineservice.domain.user.vo.UserInfo;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;

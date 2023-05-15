@@ -1,4 +1,4 @@
-package com.mineservice.login.vo.response;
+package com.mineservice.domain.user.vo.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

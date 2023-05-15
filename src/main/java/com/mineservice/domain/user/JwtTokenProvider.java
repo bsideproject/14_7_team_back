@@ -1,4 +1,4 @@
-package com.mineservice.login;
+package com.mineservice.domain.user;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

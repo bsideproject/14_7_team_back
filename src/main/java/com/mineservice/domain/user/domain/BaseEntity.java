@@ -1,4 +1,4 @@
-package com.mineservice.login.entity;
+package com.mineservice.domain.user.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;

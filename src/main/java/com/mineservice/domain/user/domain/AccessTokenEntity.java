@@ -1,6 +1,5 @@
 package com.mineservice.domain.user.domain;
 
-import com.mineservice.login.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

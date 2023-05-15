@@ -1,9 +1,9 @@
-package com.mineservice.login.service.impl;
+package com.mineservice.domain.user.service.impl;
 
 import com.mineservice.domain.user.domain.AccessTokenEntity;
 import com.mineservice.domain.user.repository.AccessTokenRepository;
-import com.mineservice.login.service.AccessTokenService;
-import com.mineservice.login.vo.UserInfo;
+import com.mineservice.domain.user.service.AccessTokenService;
+import com.mineservice.domain.user.vo.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
