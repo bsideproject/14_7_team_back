@@ -29,12 +29,13 @@ public class UserController {
 
     @PostMapping("/user/alarm")
     @ApiOperation(value = "회원 알람 on/off")
-    public ResponseEntity<String> userAlarm(@RequestBody UserAlarmReqDTO alarmReqDTO, @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<String> userAlarm(@RequestBody UserAlarmReqDTO alarmReqDTO,
+                                            @ApiIgnore @AuthenticationPrincipal UserDetails user) {
         log.info("userId :{}", user.getUsername());
         log.info("alarmReqDTO : {}", alarmReqDTO);
 
         String userId = user.getUsername();
-        userAlarmService.switchUserAlarm(alarmReqDTO.isAlarm(), userId);
+        userAlarmService.switchUserAlarm(alarmReqDTO.getAlarm(), userId);
 
         return ResponseEntity.ok().build();
     }
