@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
@@ -24,7 +25,9 @@ public class FileInfoController {
     private final ObjectStorageService objectStorageService;
 
     @GetMapping("/image/thumb/{article_id}")
-    public ResponseEntity<byte[]> thumbImage(@PathVariable("article_id") Long articleId, HttpServletResponse response) {
+    public ResponseEntity<byte[]> thumbImage(@PathVariable("article_id") Long articleId, HttpServletResponse response,
+                                             HttpServletRequest request) {
+        log.info("URI : {}", request.getRequestURI());
         log.info("articleId : {}", articleId);
         FileInfoEntity fileInfo = fileInfoService.findOneByArticleId(articleId);
         if (fileInfo == null) {

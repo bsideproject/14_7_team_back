@@ -1,7 +1,7 @@
 package com.mineservice.domain.user.controller;
 
-import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.domain.user.JwtTokenProvider;
+import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.domain.user.service.AccessTokenService;
 import com.mineservice.domain.user.service.RefreshTokenService;
 import com.mineservice.domain.user.service.UserInfoService;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,9 @@ public class NaverLoginController {
 
     @PostMapping("/login/naver")
     @ApiOperation(value = "네이버 로그인")
-    public ResponseEntity<ResponseJwt> jwtCreate(@RequestBody UserInfo userInfo) {
+    public ResponseEntity<ResponseJwt> jwtCreate(@RequestBody UserInfo userInfo,
+                                                 HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("request : {}", userInfo.toString());
 
         UserInfoEntity userEntity = userInfoService.getUser(userInfo.getId(), userInfo.getProvider());

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,9 @@ public class PushNotiController {
 
     @GetMapping("/push-noti")
     @ApiOperation(value = "알림 목록 불러오기")
-    public ResponseEntity<List<PushNotiResDTO>> getNotiList(@ApiIgnore @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<List<PushNotiResDTO>> getNotiList(@ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                            HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("userId : {}", user.getUsername());
         String userId = user.getUsername();
 
@@ -39,7 +42,9 @@ public class PushNotiController {
     @PostMapping("/device-token")
     @ApiOperation(value = "푸시 발송을 위한 토큰 등록")
     public ResponseEntity<String> registerDeviceToken(@RequestBody DeviceTokenReqDTO tokenReqDTO,
-                                                      @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+                                                      @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                      HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("userId : {}", user.getUsername());
         log.info("tokenReqDTO : {}", tokenReqDTO);
         String userId = user.getUsername();

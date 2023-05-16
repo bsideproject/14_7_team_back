@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,9 @@ public class ArticleController {
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "아티클 저장", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> registerArticle(@ModelAttribute ArticleReqDTO reqDTO,
-                                                  @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+                                                  @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                  HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("requestDTO :{}", reqDTO.toString());
         log.info("imgOrgName :{}", reqDTO.getImg() == null ? null : reqDTO.getImg().getOriginalFilename());
 
@@ -66,7 +69,9 @@ public class ArticleController {
                                                      @RequestParam(required = false) List<String> types,
                                                      @RequestParam(required = false) List<String> tags,
                                                      @RequestParam(defaultValue = "desc", required = false) String sort,
-                                                     @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+                                                     @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                     HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("article search page: {}", page);
 
         String userId = user.getUsername();
@@ -85,7 +90,9 @@ public class ArticleController {
     @ApiResponses(
             @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우 (존재하지 않았거나 삭제한 경우)")
     )
-    public ResponseEntity<ArticleDTO> getArticle(@PathVariable Long id, @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<ArticleDTO> getArticle(@PathVariable Long id, @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                 HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("findArticle id :{}", id);
         String userId = user.getUsername();
 
@@ -97,7 +104,9 @@ public class ArticleController {
     @PutMapping("/articles")
     @ApiOperation(value = "아티클 수정")
     public ResponseEntity<String> modifyArticle(@RequestBody ArticleModDTO dto,
-                                                @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+                                                @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("modifyArticle : {}", dto.toString());
 
         String userId = user.getUsername();
@@ -114,7 +123,9 @@ public class ArticleController {
     @ApiOperation(value = "아티클 삭제")
     @ApiImplicitParam(name = "id", value = "아티클 아이디", required = true, dataType = "java.lang.Long", paramType = "path", example = "1")
     public ResponseEntity<String> deleteArticle(@PathVariable Long id,
-                                                @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+                                                @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         log.info("deleteArticle id :{}", id);
 
         articleService.deleteArticle(id);

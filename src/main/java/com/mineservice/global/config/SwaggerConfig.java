@@ -5,6 +5,10 @@ import static springfox.documentation.schema.AlternateTypeRules.newRule;
 import com.fasterxml.classmate.TypeResolver;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +48,7 @@ public class SwaggerConfig {
         Server localServer = new Server("local", "http://localhost:8080", "for local", Collections.emptyList(), Collections.emptyList());
         Server mineServer = new Server("mine", "https://mine.directory", "for prod", Collections.emptyList(), Collections.emptyList());
         return new Docket(DocumentationType.OAS_30)
+                .directModelSubstitute(LocalTime.class, String.class)
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()))
                 .servers(localServer, mineServer)

@@ -2,14 +2,14 @@ package com.mineservice.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mineservice.domain.user.domain.UserInfoEntity;
-import com.mineservice.global.AppleLoginUtil;
 import com.mineservice.domain.user.JwtTokenProvider;
+import com.mineservice.domain.user.domain.UserInfoEntity;
 import com.mineservice.domain.user.service.AccessTokenService;
 import com.mineservice.domain.user.service.RefreshTokenService;
 import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserInfo;
 import com.mineservice.domain.user.vo.response.ResponseJwt;
+import com.mineservice.global.AppleLoginUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -54,7 +55,9 @@ public class AppleLoginController {
             @ApiImplicitParam(name = "userName", value = "사용자 이름", dataType = "java.lang.String", paramType = "query")
     })
     public ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code,
-                                                  @RequestParam(value = "userName", required = false) String userName) throws JsonProcessingException {
+                                                  @RequestParam(value = "userName", required = false) String userName,
+                                                  HttpServletRequest request) throws JsonProcessingException {
+        log.info("api : {}", request.getRequestURI());
         log.info("code : {}", code);
         log.info("userName : {}", userName);
 

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -31,7 +33,9 @@ public class TagController {
             @ApiImplicitParam(name = "articleId", value = "아티클 id", dataType = "java.lang.Long", paramType = "query")
     })
     public ResponseEntity<TagResDTO> getTags(@RequestParam(required = false) Long articleId,
-                                             @ApiIgnore @AuthenticationPrincipal UserDetails user) {
+                                             @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                             HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
         String userId = user.getUsername();
         log.info("userId : {}", userId);
         TagResDTO resDTO = tagService.findAllTagName(articleId, userId);

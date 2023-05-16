@@ -98,6 +98,10 @@ public class UserInfoEntity implements UserDetails {
 
     }
 
+    public String getEntityUserName() {
+        return userName;
+    }
+
     @Override
     public String getPassword() {
         return null;
