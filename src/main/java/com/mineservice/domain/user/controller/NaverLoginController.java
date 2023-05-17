@@ -38,7 +38,7 @@ public class NaverLoginController {
         log.info("api : {}", request.getRequestURI());
         log.info("request : {}", userInfo.toString());
 
-        UserInfoEntity userEntity = userInfoService.getUser(userInfo.getId(), userInfo.getProvider());
+        UserInfoEntity userEntity = userInfoService.findByIdAndProvider(userInfo.getId(), userInfo.getProvider());
 
         String userId;
         List<String> roles;
@@ -50,7 +50,7 @@ public class NaverLoginController {
 
             userInfoService.joinUser(userId, userInfo);
         } else {//이미 회원일 경우
-            log.info("getUser : {}", userEntity.toString());
+            log.info("findByIdAndProvider : {}", userEntity.toString());
             userId = userEntity.getId();
             roles = userEntity.getRoles();
             log.info("기존회원 userId : {}", userId);

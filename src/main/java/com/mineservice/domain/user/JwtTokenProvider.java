@@ -1,14 +1,17 @@
 package com.mineservice.domain.user;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.mineservice.domain.user.domain.MineKeyEntity;
+import com.mineservice.domain.user.repository.MineKeyRepository;
+import com.mineservice.domain.user.service.MineKeyService;
+import io.jsonwebtoken.*;
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,16 +26,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtTokenProvider {
 
+    private final MineKeyService mineKeyService;
+
     @Value("${token.secret}")
     private String SECRET_KEY;
 
 
-
     @Value("${token.expiration_time}")
     private Long TOKEN_EXPIRATION_TIME;
-
-    // 토큰 유효시간 30분
-    private long tokenValidTime = 30 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 
@@ -46,12 +47,26 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("roles", roles);
 
-        return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-            .compact();
+        Date expiration = new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME);
+        log.info("expiration : {}", expiration);
+
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(expiration)
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .compact();
+
+        Optional<MineKeyEntity> optionalMineKey = mineKeyService.findByUserId(userId);
+        if (optionalMineKey.isPresent()) {
+            log.info("mine key update");
+            mineKeyService.updateKey(optionalMineKey.get(), userId, token);
+        } else {
+            log.info("mine key create");
+            mineKeyService.createKey(userId, token);
+        }
+
+        return token;
     }
 
     public Authentication getAuthentication(String token) {
@@ -73,14 +88,8 @@ public class JwtTokenProvider {
 
     // 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken);
-            log.info("valid token");
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            log.error("not valid token");
-            log.error(e.getMessage());
-            return false;
-        }
+        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken);
+        log.info("valid token");
+        return !claims.getBody().getExpiration().before(new Date());
     }
 }

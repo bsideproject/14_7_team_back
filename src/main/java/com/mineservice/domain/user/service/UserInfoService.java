@@ -89,8 +89,11 @@ public class UserInfoService {
         return detailDTO;
     }
 
+    public Optional<UserInfoEntity> findById(String id) {
+        return userInfoRepository.findById(id);
+    }
 
-    public UserInfoEntity getUser(String id, String provider) {
+    public UserInfoEntity findByIdAndProvider(String id, String provider) {
         return userInfoRepository.findByUidAndProvider(id, provider);
     }
 
