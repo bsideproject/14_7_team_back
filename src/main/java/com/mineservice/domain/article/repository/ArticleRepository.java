@@ -26,8 +26,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
             "AND (:title is null OR a.title LIKE %:title%) " +
             "AND (:favorite is null OR a.favorite = :favorite) " +
             "AND (:readYn is null OR a.read_yn = :readYn) " +
-            "AND (:types is null OR a.type IN (:types)) " +
-            "AND (:tags is null OR t.name IN (:tags)) " +
+            "AND (COALESCE(:types) is null OR a.type IN (:types)) " +
+            "AND (COALESCE(:tags) is null OR t.name IN (:tags)) " +
             "GROUP BY a.id ", nativeQuery = true,
             countQuery = "SELECT COUNT(distinct a.id) " +
                     "FROM article a " +
