@@ -1,6 +1,8 @@
 package com.mineservice.domain.user.service;
 
 import com.mineservice.domain.user.repository.UserInfoRepository;
+import com.mineservice.global.exception.CustomException;
+import com.mineservice.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,7 +17,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-         return userInfoRepository.findById(username)
-            .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        return userInfoRepository.findById(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

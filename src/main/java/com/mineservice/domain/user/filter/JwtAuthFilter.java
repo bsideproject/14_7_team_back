@@ -1,13 +1,15 @@
 package com.mineservice.domain.user.filter;
 
 import com.mineservice.domain.user.JwtTokenProvider;
+import com.mineservice.global.exception.CustomException;
+import com.mineservice.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -43,13 +45,15 @@ public class JwtAuthFilter extends GenericFilterBean {
 
             } catch (IllegalArgumentException e) {
                 log.error("an error occured during getting username from token", e);
-                throw new JwtException("유효하지 않은 토큰");
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
             } catch (ExpiredJwtException e) {
                 log.warn("the token is expired and not valid anymore", e);
-                throw new JwtException("토큰 기한 만료");
+                throw new CustomException(ErrorCode.EXPIRED_TOKEN);
             } catch (SignatureException e) {
                 log.error("Authentication Failed. Username or Password not valid.");
-                throw new JwtException("사용자 인증 실패");
+                throw new CustomException(ErrorCode.INVALID_SIGNATURE);
+            } catch (MalformedJwtException e) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
             }
         }
 

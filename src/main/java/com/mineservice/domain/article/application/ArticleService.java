@@ -13,14 +13,14 @@ import com.mineservice.domain.article_tag.repository.ArticleTagRepository;
 import com.mineservice.domain.file_info.application.FileInfoService;
 import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.tag.domain.TagEntity;
+import com.mineservice.global.exception.CustomException;
+import com.mineservice.global.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,7 +56,8 @@ public class ArticleService {
         } else {
             articleRepository.findArticleByUrlAndUserId(articleReqDTO.getUrl(), userId)
                     .ifPresent(article -> {
-                        throw new IllegalArgumentException("이미 등록된 링크입니다.");
+                        log.error("이미 등록된 링크입니다.");
+                        throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
                     });
         }
         log.info("articleTitle {}", articleReqDTO.getTitle());
@@ -122,13 +123,13 @@ public class ArticleService {
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
         if (optionalArticle.isEmpty()) {
             log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클이 없습니다.");
+            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
         }
 
         ArticleEntity articleEntity = optionalArticle.get();
         if ("N".equals(articleEntity.getUseYn())) {
             log.error("해당하는 아티클은 삭제되었습니다 [articleId: {}, userId : {}]", articleId, userId);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클은 삭제되었습니다.");
+            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
         }
 
         log.info("articleEntity : {}", articleEntity.toString());
@@ -175,7 +176,7 @@ public class ArticleService {
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
         if (optionalArticle.isEmpty()) {
             log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 아티클이 없습니다.");
+            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
         }
 
         ArticleEntity articleEntity = optionalArticle.get();

@@ -10,15 +10,18 @@ import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserInfo;
 import com.mineservice.domain.user.vo.response.ResponseJwt;
 import com.mineservice.global.AppleLoginUtil;
+import com.mineservice.global.exception.CustomException;
+import com.mineservice.global.exception.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,6 +57,9 @@ public class AppleLoginController {
             @ApiImplicitParam(name = "code", value = "code", dataType = "java.lang.String", paramType = "query"),
             @ApiImplicitParam(name = "userName", value = "사용자 이름", dataType = "java.lang.String", paramType = "query")
     })
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "유저 정보가 없을 경우")
+    )
     public ResponseEntity<ResponseJwt> oauthApple(@RequestParam(value = "code") String code,
                                                   @RequestParam(value = "userName", required = false) String userName,
                                                   HttpServletRequest request) throws JsonProcessingException {
@@ -89,7 +95,7 @@ public class AppleLoginController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseJwt);
         } else {
-            throw new UsernameNotFoundException("사용자 정보가 없습니다.");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 

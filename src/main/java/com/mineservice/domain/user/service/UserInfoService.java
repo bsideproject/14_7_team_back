@@ -7,11 +7,11 @@ import com.mineservice.domain.user.repository.UserAlarmRepository;
 import com.mineservice.domain.user.repository.UserInfoRepository;
 import com.mineservice.domain.user.vo.UserDetailDTO;
 import com.mineservice.domain.user.vo.UserInfo;
+import com.mineservice.global.exception.CustomException;
+import com.mineservice.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +34,7 @@ public class UserInfoService {
     public UserDetailDTO findUserDetailDTO(String userId) {
         Optional<UserInfoEntity> optionalUserInfo = userInfoRepository.findById(userId);
         if (optionalUserInfo.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 정보가 없습니다");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
         UserInfoEntity userInfoEntity = optionalUserInfo.get();
         log.info("userInfoEntity : {}", userInfoEntity);

@@ -36,6 +36,9 @@ public class ArticleController {
 
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "아티클 저장", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiResponses(
+            @ApiResponse(responseCode = "409", description = "이미 존재하는 링크일 경우")
+    )
     public ResponseEntity<String> registerArticle(@ModelAttribute ArticleReqDTO reqDTO,
                                                   @ApiIgnore @AuthenticationPrincipal UserDetails user,
                                                   HttpServletRequest request) {
@@ -103,6 +106,9 @@ public class ArticleController {
 
     @PutMapping("/articles")
     @ApiOperation(value = "아티클 수정")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우 (존재하지 않았거나 삭제한 경우)")
+    )
     public ResponseEntity<String> modifyArticle(@RequestBody ArticleModDTO dto,
                                                 @ApiIgnore @AuthenticationPrincipal UserDetails user,
                                                 HttpServletRequest request) {

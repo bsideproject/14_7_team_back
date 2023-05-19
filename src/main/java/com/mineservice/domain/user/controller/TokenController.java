@@ -9,6 +9,8 @@ import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.RequestJwt;
 import com.mineservice.domain.user.vo.response.ResponseJwt;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,9 @@ public class TokenController {
 
     @PostMapping("/token/renew")
     @ApiOperation(value = "MINE 토큰 재발급")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "저장된 키 정보나 회원정보가 없을경우")
+    )
     public ResponseEntity<ResponseJwt> renewToken(@RequestBody RequestJwt token) {
 
         Optional<MineKeyEntity> optionalMineKey = mineKeyService.findByToken(token.getAccessToken());

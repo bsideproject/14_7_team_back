@@ -5,6 +5,8 @@ import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserAlarmReqDTO;
 import com.mineservice.domain.user.vo.UserDetailDTO;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,10 @@ public class UserController {
     private final UserAlarmService userAlarmService;
 
     @GetMapping("/user/detail")
+    @ApiOperation(value = "회원 정보 조회")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "해당하는 회원정보가 없을경우")
+    )
     public ResponseEntity<UserDetailDTO> userDetail(@ApiIgnore @AuthenticationPrincipal UserDetails user, HttpServletRequest request) {
         log.info("api : {}", request.getRequestURI());
         log.info("userId :{}", user.getUsername());
