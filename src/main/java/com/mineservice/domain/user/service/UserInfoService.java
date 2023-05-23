@@ -89,6 +89,20 @@ public class UserInfoService {
         return detailDTO;
     }
 
+    public void modifyUserName(String userId, String userName) {
+        Optional<UserInfoEntity> optionalUserInfo = findById(userId);
+        if (optionalUserInfo.isEmpty()) {
+            log.error("해당하는 유저가 없습니다 : {}", userId);
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+
+        UserInfoEntity userInfoEntity = optionalUserInfo.get();
+        userInfoEntity.setUserName(userName);
+        userInfoEntity.setModifyBy(userId);
+        userInfoEntity.setModifyDt(LocalDateTime.now());
+        userInfoRepository.save(userInfoEntity);
+    }
+
     public Optional<UserInfoEntity> findById(String id) {
         return userInfoRepository.findById(id);
     }

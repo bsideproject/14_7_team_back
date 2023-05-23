@@ -4,6 +4,7 @@ import com.mineservice.domain.user.service.UserAlarmService;
 import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserAlarmReqDTO;
 import com.mineservice.domain.user.vo.UserDetailDTO;
+import com.mineservice.domain.user.vo.UserModifyDTO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -38,6 +39,25 @@ public class UserController {
         UserDetailDTO userDetailDTO = userInfoService.findUserDetailDTO(user.getUsername());
 
         return ResponseEntity.ok(userDetailDTO);
+    }
+
+    @PutMapping("/user/name")
+    @ApiOperation(value = "회원 이름 변경")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "해당하는 회원정보가 없을경우")
+    )
+    public ResponseEntity<String> modifyUserName(@RequestBody UserModifyDTO dto,
+                                                 @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                 HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
+        log.info("userId :{}", user.getUsername());
+        log.info("userModifyDTO : {}", dto);
+        
+        String userId = user.getUsername();
+
+        userInfoService.modifyUserName(userId, dto.getUserName());
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/user/alarm")
