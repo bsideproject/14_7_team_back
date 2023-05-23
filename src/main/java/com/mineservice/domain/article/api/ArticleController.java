@@ -1,10 +1,7 @@
 package com.mineservice.domain.article.api;
 
 import com.mineservice.domain.article.application.ArticleService;
-import com.mineservice.domain.article.dto.ArticleDTO;
-import com.mineservice.domain.article.dto.ArticleModDTO;
-import com.mineservice.domain.article.dto.ArticleReqDTO;
-import com.mineservice.domain.article.dto.ArticleResDTO;
+import com.mineservice.domain.article.dto.*;
 import com.mineservice.domain.tag.application.TagService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -124,6 +121,41 @@ public class ArticleController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/articles/read")
+    @ApiOperation(value = "아티클 읽음/안읽음")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우 (존재하지 않았거나 삭제한 경우)")
+    )
+    public ResponseEntity<String> modifyArticleRead(@RequestBody ArticleModReadDTO dto,
+                                                    @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                    HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
+        log.info("modifyArticleRead : {}", dto.toString());
+
+        String userId = user.getUsername();
+
+        articleService.modifyArticleRead(dto, userId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/articles/favorite")
+    @ApiOperation(value = "아티클 즐겨찾기 수정")
+    @ApiResponses(
+            @ApiResponse(responseCode = "404", description = "해당하는 아티클이 없을경우 (존재하지 않았거나 삭제한 경우)")
+    )
+    public ResponseEntity<String> modifyArticleFavorite(@RequestBody ArticleModFavoriteDTO dto,
+                                                        @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                                        HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
+        log.info("modifyArticleRead : {}", dto.toString());
+
+        String userId = user.getUsername();
+
+        articleService.modifyArticleFavorite(dto, userId);
+
+        return ResponseEntity.ok().build();
+    }
 
     @DeleteMapping("/articles/{id}")
     @ApiOperation(value = "아티클 삭제")

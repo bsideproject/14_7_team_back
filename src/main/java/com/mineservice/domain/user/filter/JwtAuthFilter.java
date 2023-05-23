@@ -47,7 +47,7 @@ public class JwtAuthFilter extends GenericFilterBean {
                 log.error("an error occured during getting username from token", e);
                 throw new CustomException(ErrorCode.INVALID_TOKEN);
             } catch (ExpiredJwtException e) {
-                log.warn("the token is expired and not valid anymore", e);
+                log.warn("the token is expired and not valid anymore : {}", e.getMessage());
                 throw new CustomException(ErrorCode.EXPIRED_TOKEN);
             } catch (SignatureException e) {
                 log.error("Authentication Failed. Username or Password not valid.");

@@ -2,10 +2,7 @@ package com.mineservice.domain.article.application;
 
 import com.mineservice.domain.article.domain.ArticleAlarm;
 import com.mineservice.domain.article.domain.ArticleEntity;
-import com.mineservice.domain.article.dto.ArticleDTO;
-import com.mineservice.domain.article.dto.ArticleModDTO;
-import com.mineservice.domain.article.dto.ArticleReqDTO;
-import com.mineservice.domain.article.dto.ArticleResDTO;
+import com.mineservice.domain.article.dto.*;
 import com.mineservice.domain.article.repository.ArticleAlarmRepository;
 import com.mineservice.domain.article.repository.ArticleRepository;
 import com.mineservice.domain.article_tag.domain.ArticleTagEntity;
@@ -238,6 +235,53 @@ public class ArticleService {
             articleTagRepository.deleteByArticleId(articleId);
         }
 
+        articleEntity.setModifyBy(userId);
+        articleEntity.setModifyDt(LocalDateTime.now());
+        articleRepository.save(articleEntity);
+    }
+
+    @Transactional
+    public void modifyArticleRead(ArticleModReadDTO dto, String userId) {
+        Long articleId = dto.getArticleId();
+        Boolean read = dto.getRead();
+
+        Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
+        if (optionalArticle.isEmpty()) {
+            log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
+            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
+        }
+
+        ArticleEntity articleEntity = optionalArticle.get();
+
+        if (Boolean.TRUE.equals(read)) {
+            articleEntity.setReadYn("Y");
+        } else {
+            articleEntity.setReadYn("N");
+        }
+
+        articleEntity.setModifyBy(userId);
+        articleEntity.setModifyDt(LocalDateTime.now());
+        articleRepository.save(articleEntity);
+    }
+
+    @Transactional
+    public void modifyArticleFavorite(ArticleModFavoriteDTO dto, String userId) {
+        Long articleId = dto.getArticleId();
+        Boolean favorite = dto.getFavorite();
+
+        Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
+        if (optionalArticle.isEmpty()) {
+            log.error("해당하는 아티클이 존재하지 않습니다 [articleId: {}, userId : {}]", articleId, userId);
+            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
+        }
+
+        ArticleEntity articleEntity = optionalArticle.get();
+
+        if (Boolean.TRUE.equals(favorite)) {
+            articleEntity.setFavorite("Y");
+        } else {
+            articleEntity.setFavorite("N");
+        }
         articleEntity.setModifyBy(userId);
         articleEntity.setModifyDt(LocalDateTime.now());
         articleRepository.save(articleEntity);
