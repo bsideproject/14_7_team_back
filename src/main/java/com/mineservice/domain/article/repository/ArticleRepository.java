@@ -14,6 +14,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
 
     List<ArticleEntity> findArticlesByUserIdAndTitleStartingWith(String userId, String title);
 
+    List<ArticleEntity> findAllByUserId(String userId);
+
     Optional<ArticleEntity> findArticleByUrlAndUserId(String url, String userId);
 
     Optional<ArticleEntity> findArticleByIdAndUserId(Long id, String userId);

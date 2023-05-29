@@ -1,10 +1,11 @@
 package com.mineservice.domain.user.service;
 
+import com.mineservice.domain.article.application.ArticleService;
+import com.mineservice.domain.push.repository.DeviceTokenRepository;
+import com.mineservice.domain.push.repository.PushNotiRepository;
+import com.mineservice.domain.tag.application.TagService;
 import com.mineservice.domain.user.domain.*;
-import com.mineservice.domain.user.repository.AccessTokenRepository;
-import com.mineservice.domain.user.repository.RefreshTokenRepository;
-import com.mineservice.domain.user.repository.UserAlarmRepository;
-import com.mineservice.domain.user.repository.UserInfoRepository;
+import com.mineservice.domain.user.repository.*;
 import com.mineservice.domain.user.vo.UserDetailDTO;
 import com.mineservice.domain.user.vo.UserInfo;
 import com.mineservice.global.exception.CustomException;
@@ -12,6 +13,7 @@ import com.mineservice.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,10 +25,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserInfoService {
 
+    private final TagService tagService;
+    private final ArticleService articleService;
     private final UserInfoRepository userInfoRepository;
     private final UserAlarmRepository userAlarmRepository;
     private final AccessTokenRepository accessTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final DeviceTokenRepository deviceTokenRepository;
+    private final PushNotiRepository pushNotiRepository;
+    private final MineKeyRepository mineKeyRepository;
+    private final ReasonRepository reasonRepository;
 
     private static final List<DayType> WEEK_DAY_LIST = Arrays.asList(DayType.MON, DayType.TUE, DayType.WED, DayType.THU, DayType.FRI);
     private static final List<DayType> WEEKEND_LIST = Arrays.asList(DayType.SAT, DayType.SUN);
@@ -161,5 +169,42 @@ public class UserInfoService {
         entity.setLastLoginDt(LocalDateTime.now());
         entity.setModifyBy(entity.getId());
         return userInfoRepository.save(entity);
+    }
+
+    @Transactional
+    public void logOutUser(String userId) {
+        deviceTokenRepository.deleteByUserId(userId);
+    }
+
+    @Transactional
+    public void withdrawUser(String userId, String reason) {
+
+        Optional<UserInfoEntity> optionalUserInfo = userInfoRepository.findById(userId);
+        if (optionalUserInfo.isEmpty()) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        log.warn("회원탈퇴 : {}", userId);
+        UserInfoEntity userInfoEntity = optionalUserInfo.get();
+
+        articleService.deleteAllArticleByUserId(userId);
+        tagService.deleteTagByUserId(userId);
+
+        userAlarmRepository.deleteByUserId(userId);
+        accessTokenRepository.deleteByUserId(userId);
+        refreshTokenRepository.deleteByUserId(userId);
+
+        deviceTokenRepository.deleteByUserId(userId);
+        pushNotiRepository.deleteAllByUserId(userId);
+
+        mineKeyRepository.deleteByUserId(userId);
+        userInfoRepository.delete(userInfoEntity);
+
+        ReasonEntity reasonEntity = ReasonEntity.builder()
+                .userId(userId)
+                .type("탈퇴")
+                .reason(reason)
+                .createdDt(LocalDateTime.now())
+                .build();
+        reasonRepository.save(reasonEntity);
     }
 }

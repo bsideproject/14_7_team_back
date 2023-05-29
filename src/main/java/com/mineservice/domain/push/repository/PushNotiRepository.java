@@ -9,4 +9,6 @@ public interface PushNotiRepository extends JpaRepository<PushNoti, Long> {
 
     List<PushNoti> findAllByUserId(String userId);
 
+    void deleteAllByUserId(String userId);
+
 }

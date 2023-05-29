@@ -20,7 +20,7 @@ public class UserAlarmReqDTO {
     @Schema(description = "알람 on/off (true : on | false : off)", example = "true")
     private Boolean alarm;
 
-    @Schema(description = "알람요일")
+    @Schema(description = "알람요일", example = "월,화,수,목,금,토,일")
     private List<String> days;
 
     @Schema(description = "알람시각", example = "09:00:00")

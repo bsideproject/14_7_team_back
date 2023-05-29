@@ -52,7 +52,7 @@ public class UserController {
         log.info("api : {}", request.getRequestURI());
         log.info("userId :{}", user.getUsername());
         log.info("userModifyDTO : {}", dto);
-        
+
         String userId = user.getUsername();
 
         userInfoService.modifyUserName(userId, dto.getUserName());
@@ -76,14 +76,30 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/user/sign-out")
-    @ApiOperation(value = "회원 탈퇴")
-    public ResponseEntity<String> withdrawUser(@ApiIgnore @AuthenticationPrincipal UserDetails user,
-                                               HttpServletRequest request) {
+    @PutMapping("/user/log-out")
+    @ApiOperation(value = "회원 로그아웃")
+    public ResponseEntity<String> userLogout(@ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                             HttpServletRequest request) {
         log.info("api : {}", request.getRequestURI());
         log.info("userId :{}", user.getUsername());
 
-        // 저장된 데이터 삭제 순서 정하기
+        String userId = user.getUsername();
+        userInfoService.logOutUser(userId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/user/sign-out")
+    @ApiOperation(value = "회원 탈퇴")
+    public ResponseEntity<String> withdrawUser(@RequestParam String reason,
+                                               @ApiIgnore @AuthenticationPrincipal UserDetails user,
+                                               HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
+        log.info("userId :{}", user.getUsername());
+        log.info("reason : {}", reason);
+
+        String userId = user.getUsername();
+        userInfoService.withdrawUser(userId, reason);
 
         return ResponseEntity.ok().build();
     }

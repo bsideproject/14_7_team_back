@@ -295,6 +295,18 @@ public class ArticleService {
         articleRepository.deleteById(articleId);
     }
 
+
+    public void deleteAllArticleByUserId(String userId) {
+        List<ArticleEntity> articleEntityList = articleRepository.findAllByUserId(userId);
+        for (ArticleEntity article : articleEntityList) {
+            Long articleId = article.getId();
+            fileInfoService.deleteFileInfo(articleId);
+            articleTagRepository.deleteByArticleId(articleId);
+            articleAlarmRepository.deleteByArticleId(articleId);
+            articleRepository.deleteById(articleId);
+        }
+    }
+
     private String getArticleType(String url) {
         if (url == null) {
             return "image";

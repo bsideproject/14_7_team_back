@@ -11,4 +11,6 @@ public interface MineKeyRepository extends JpaRepository<MineKeyEntity, Integer>
 
     Optional<MineKeyEntity> findByToken(String token);
 
+    void deleteByUserId(String userId);
+
 }
