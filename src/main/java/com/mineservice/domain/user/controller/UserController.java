@@ -5,6 +5,7 @@ import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserAlarmReqDTO;
 import com.mineservice.domain.user.vo.UserDetailDTO;
 import com.mineservice.domain.user.vo.UserModifyDTO;
+import com.mineservice.global.infra.slack.SlackNotiService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,6 +27,7 @@ public class UserController {
 
     private final UserInfoService userInfoService;
     private final UserAlarmService userAlarmService;
+    private final SlackNotiService notify;
 
     @GetMapping("/user/detail")
     @ApiOperation(value = "회원 정보 조회")
@@ -100,6 +102,8 @@ public class UserController {
 
         String userId = user.getUsername();
         userInfoService.withdrawUser(userId, reason);
+
+        notify.sendSlackNotify("회원탈퇴", userId + "\n탈퇴사유 : " + reason);
 
         return ResponseEntity.ok().build();
     }

@@ -1,28 +1,25 @@
 package com.mineservice.global.infra.slack;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class SlackNotiService {
+import java.util.*;
 
-    @Value("${slack-web-hook-url}")
-    private String slackNotiUrl;
+@SpringBootTest
+class SlackNotiServiceTest {
 
-    @Async
-    public void sendSlackNotify(String title, String msg) {
+    @Test
+    void slackNoti() {
         RestTemplate rt = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String title = "타타타타타타타";
+        String msg = "메메메메메메메메";
 
         HttpEntity<String> entity = new HttpEntity<>("{\n" +
                 "   \"attachments\":[\n" +
@@ -39,7 +36,7 @@ public class SlackNotiService {
                 "   ]\n" +
                 "}", headers);
 
-        rt.postForObject(slackNotiUrl, entity, String.class);
+        rt.postForObject("https://hooks.slack.com/services/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", entity, String.class);
     }
 
 }
