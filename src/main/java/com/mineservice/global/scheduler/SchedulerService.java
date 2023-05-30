@@ -26,7 +26,7 @@ public class SchedulerService {
     @Async
     public void userAlarm() {
         log.info("userAlarm 실행");
-        notify.sendSlackNotify("사용자 푸시 발송", 0 + "개 발송");
+//        notify.sendSlackNotify("사용자 푸시 발송", 0 + "개 발송");
     }
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
@@ -40,7 +40,9 @@ public class SchedulerService {
         List<ArticleEntity> nowAlarm = useAlarm.stream().filter(a -> a.getArticleAlarm().getTime().equals(LocalDateTime.now())).collect(Collectors.toList());
         log.info("nowAlarmSize : {}", nowAlarm.size());
 
-        notify.sendSlackNotify("아티클 푸시 발송", nowAlarm.size() + "개 발송");
+        if (!nowAlarm.isEmpty()) {
+            notify.sendSlackNotify("아티클 푸시 발송", nowAlarm.size() + "개 발송");
+        }
 
     }
 
