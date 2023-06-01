@@ -5,6 +5,7 @@ import com.mineservice.domain.user.service.UserInfoService;
 import com.mineservice.domain.user.vo.UserAlarmReqDTO;
 import com.mineservice.domain.user.vo.UserDetailDTO;
 import com.mineservice.domain.user.vo.UserModifyDTO;
+import com.mineservice.domain.user.vo.UserSignOutDTO;
 import com.mineservice.global.infra.slack.SlackNotiService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -93,14 +94,34 @@ public class UserController {
 
     @DeleteMapping("/user/sign-out")
     @ApiOperation(value = "회원 탈퇴")
-    public ResponseEntity<String> withdrawUser(@RequestParam String reason,
+    public ResponseEntity<String> withdrawUser(@RequestBody UserSignOutDTO dto,
                                                @ApiIgnore @AuthenticationPrincipal UserDetails user,
                                                HttpServletRequest request) {
         log.info("api : {}", request.getRequestURI());
         log.info("userId :{}", user.getUsername());
-        log.info("reason : {}", reason);
+        log.info("userSignOutDTO : {}", dto);
 
         String userId = user.getUsername();
+
+        String reason = "";
+        switch (dto.getSignOutType()) {
+            case "contentSave":
+                reason = "콘텐츠 저장이 불편해서";
+                break;
+            case "contentViewing":
+                reason = "콘텐츠를 보는게 불편해서";
+                break;
+            case "unfrequentlyUsed":
+                reason = "자주 사용하지 않아서";
+                break;
+            case "feature":
+                reason = "원하는 기능이 없어서";
+                break;
+            case "etc":
+                reason = dto.getReason();
+                break;
+        }
+
         userInfoService.withdrawUser(userId, reason);
 
         notify.sendSlackNotify("회원탈퇴", userId + "\n탈퇴사유 : " + reason);
