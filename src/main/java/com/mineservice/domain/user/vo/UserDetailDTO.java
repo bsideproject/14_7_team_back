@@ -15,6 +15,8 @@ import java.util.List;
 @Schema(name = "유저정보")
 public class UserDetailDTO {
 
+    @Schema(name = "사용자 id")
+    private String userId;
     @Schema(name = "사용자명")
     private String userName;
     @Schema(name = "전체 아티클 개수")

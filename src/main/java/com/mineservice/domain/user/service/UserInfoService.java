@@ -48,6 +48,7 @@ public class UserInfoService {
         log.info("userInfoEntity : {}", userInfoEntity);
 
         UserDetailDTO detailDTO = new UserDetailDTO();
+        detailDTO.setUserId(userInfoEntity.getId());
         detailDTO.setUserName(userInfoEntity.getEntityUserName());
         detailDTO.setTotalArticleSize(userInfoEntity.getArticle().size());
 

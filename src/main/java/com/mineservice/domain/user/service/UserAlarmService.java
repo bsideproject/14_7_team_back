@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -20,7 +21,7 @@ public class UserAlarmService {
     private static final List<String> WEEK_DAY_LIST = Arrays.asList("월", "화", "수", "목", "금");
     private static final List<String> WEEKEND_LIST = Arrays.asList("토", "일");
 
-    public void modifyUserAlarm(UserAlarmReqDTO dto, String userId) {
+    public Optional<String> modifyUserAlarm(UserAlarmReqDTO dto, String userId) {
         Boolean alarm = dto.getAlarm();
 
         Optional<UserAlarmEntity> optionalUserAlarm = userAlarmRepository.findById(userId);
@@ -65,6 +66,11 @@ public class UserAlarmService {
         }
         userAlarmRepository.save(userAlarm);
         log.info("userAlarm : {}", userAlarm.toString());
+
+        if (Boolean.TRUE.equals(alarm)) {
+            return Optional.of(userAlarm.getFrequency() + " " + userAlarm.getTime().format(DateTimeFormatter.ofPattern("a hh시 mm분")));
+        }
+        return Optional.empty();
     }
 
 }

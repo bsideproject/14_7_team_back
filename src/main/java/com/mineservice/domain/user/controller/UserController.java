@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -73,9 +74,12 @@ public class UserController {
         log.info("alarmReqDTO : {}", alarmReqDTO);
 
         String userId = user.getUsername();
-        userAlarmService.modifyUserAlarm(alarmReqDTO, userId);
-
-        return ResponseEntity.ok().build();
+        Optional<String> optionalAlarmTime = userAlarmService.modifyUserAlarm(alarmReqDTO, userId);
+        if (optionalAlarmTime.isPresent()) {
+            return ResponseEntity.ok(optionalAlarmTime.get());
+        } else {
+            return ResponseEntity.ok().build();
+        }
     }
 
 
