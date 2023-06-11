@@ -62,7 +62,7 @@ public class ArticleEntity {
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
     private List<FileInfoEntity> fileInfoEntities;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     private ArticleAlarm articleAlarm;
 
