@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,7 @@ public class ArticleDTO {
     private final boolean favorite; // 즐겨찾기 유무
     private final boolean read; // 열람여부
     private final boolean alarm; // 알람여부
+    private final LocalDateTime alarmTime;
     private final String thumbUrl; // 썸네일 URL
     private final String url; // 아티클 url
     private final List<String> tagNames; // 태그리스트

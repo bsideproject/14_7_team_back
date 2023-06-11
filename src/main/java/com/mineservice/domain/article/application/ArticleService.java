@@ -142,7 +142,8 @@ public class ArticleService {
                     .type(articleType)
                     .favorite("Y".equals(articleEntity.getFavorite()))
                     .read("Y".equals(articleEntity.getReadYn()))
-                    .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
+                    .alarm(articleEntity.getArticleAlarm() != null)
+                    .alarmTime(articleEntity.getArticleAlarm() == null ? null : articleEntity.getArticleAlarm().getTime())
                     .thumbUrl("https://mine.directory/image/thumb/" + articleEntity.getId())
                     .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
                     .build();
@@ -153,7 +154,8 @@ public class ArticleService {
                     .type(articleType)
                     .favorite("Y".equals(articleEntity.getFavorite()))
                     .read("Y".equals(articleEntity.getReadYn()))
-                    .alarm(articleAlarmRepository.findOneByArticleId(articleEntity.getId()).isPresent())
+                    .alarm(articleEntity.getArticleAlarm() != null)
+                    .alarmTime(articleEntity.getArticleAlarm() == null ? null : articleEntity.getArticleAlarm().getTime())
                     .url(articleEntity.getUrl())
                     .tagNames(tagService.findAllTagNameByArticleId(articleEntity.getId()))
                     .build();
@@ -167,7 +169,7 @@ public class ArticleService {
         Boolean favorite = dto.getFavorite();
         Boolean read = dto.getRead();
         Boolean alarm = dto.getAlarm();
-        LocalDateTime alarmTime = dto.getAlarmTime();
+        LocalDateTime alarmTime = dto.getAlarmTime().withNano(0);
         List<String> tags = dto.getTags();
 
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
@@ -199,9 +201,9 @@ public class ArticleService {
         }
 
         if (alarm != null) {
+            ArticleAlarm articleAlarm = articleEntity.getArticleAlarm();
             if (Boolean.TRUE.equals(alarm)) {
-                Optional<ArticleAlarm> optionalArticleAlarm = articleAlarmRepository.findOneByArticleId(articleId);
-                if (optionalArticleAlarm.isPresent()) {
+                if (articleAlarm != null) {
                     articleAlarmRepository.save(ArticleAlarm.builder()
                             .articleId(articleId)
                             .time(alarmTime)
@@ -215,7 +217,7 @@ public class ArticleService {
                             .build());
                 }
             } else {
-                articleAlarmRepository.deleteByArticleId(articleId);
+                articleAlarmRepository.delete(articleAlarm);
             }
         }
 
