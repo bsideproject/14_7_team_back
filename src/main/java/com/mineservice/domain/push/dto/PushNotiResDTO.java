@@ -12,6 +12,7 @@ public class PushNotiResDTO {
     private String type;
     private String title;
     private String notiDate;
+    private Long articleId;
     private String articleUrl;
 
 

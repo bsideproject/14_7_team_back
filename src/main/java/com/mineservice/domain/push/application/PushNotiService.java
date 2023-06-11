@@ -49,6 +49,7 @@ public class PushNotiService {
                 .type(article.getType())
                 .title(article.getTitle())
                 .notiDate(localDate2Str(pushNoti.getCreatedDate()))
+                .articleId(article.getId())
                 .articleUrl("https://mine.directory/api/v1/articles/" + article.getId())
                 .build();
     }

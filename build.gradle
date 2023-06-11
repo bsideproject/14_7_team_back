@@ -41,6 +41,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
 	implementation 'org.springframework.security:spring-security-core:5.7.5'
+	implementation 'com.eatthepath:pushy:0.15.2'
 
 
 	modules {
