@@ -169,7 +169,7 @@ public class ArticleService {
         Boolean favorite = dto.getFavorite();
         Boolean read = dto.getRead();
         Boolean alarm = dto.getAlarm();
-        LocalDateTime alarmTime = dto.getAlarmTime().withNano(0);
+        LocalDateTime alarmTime = dto.getAlarmTime();
         List<String> tags = dto.getTags();
 
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
@@ -206,12 +206,12 @@ public class ArticleService {
                 if (articleAlarm != null) {
                     articleAlarmRepository.save(ArticleAlarm.builder()
                             .articleId(articleId)
-                            .time(alarmTime)
+                            .time(alarmTime.withNano(0))
                             .build());
                 } else {
                     articleAlarmRepository.save(ArticleAlarm.builder()
                             .articleId(articleId)
-                            .time(alarmTime)
+                            .time(alarmTime.withNano(0))
                             .createBy(userId)
                             .createDt(LocalDateTime.now())
                             .build());
