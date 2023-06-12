@@ -1,5 +1,6 @@
 package com.mineservice.domain.article.api;
 
+import com.mineservice.domain.action.application.ActionHistService;
 import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.dto.*;
 import com.mineservice.domain.tag.application.TagService;
@@ -30,6 +31,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final TagService tagService;
+    private final ActionHistService actionHistService;
 
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "아티클 저장", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -47,6 +49,7 @@ public class ArticleController {
         log.info("userId :{}", userId);
 
         articleService.createArticle(userId, reqDTO);
+        actionHistService.createHist(userId, "registerArticle", reqDTO.getRegType());
 
         return ResponseEntity.ok().build();
     }

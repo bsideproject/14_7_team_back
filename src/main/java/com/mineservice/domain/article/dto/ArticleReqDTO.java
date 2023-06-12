@@ -37,4 +37,7 @@ public class ArticleReqDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime alarmTime = null;
 
+    @ApiModelProperty(value = "등록방식(app|share)", example = "앱|공유하기")
+    private String regType;
+
 }

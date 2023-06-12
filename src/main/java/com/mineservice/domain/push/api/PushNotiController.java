@@ -1,9 +1,11 @@
 package com.mineservice.domain.push.api;
 
+import com.mineservice.domain.action.application.ActionHistService;
 import com.mineservice.domain.push.application.DeviceTokenService;
 import com.mineservice.domain.push.application.PushNotiService;
 import com.mineservice.domain.push.dto.DeviceTokenReqDTO;
 import com.mineservice.domain.push.dto.PushNotiResDTO;
+import com.mineservice.domain.push.dto.TouchPushReqDTO;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class PushNotiController {
 
     private final PushNotiService pushNotiService;
     private final DeviceTokenService deviceTokenService;
+    private final ActionHistService actionHistService;
 
     @GetMapping("/push-noti")
     @ApiOperation(value = "알림 목록 불러오기")
@@ -50,6 +53,18 @@ public class PushNotiController {
         String userId = user.getUsername();
 
         deviceTokenService.registerToken(tokenReqDTO.getDeviceToken(), userId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/touch-push")
+    @ApiOperation(value = "푸시 노티 클릭 기록")
+    public ResponseEntity<String> touchPush(@RequestBody TouchPushReqDTO touchPushReqDTO,
+                                                HttpServletRequest request) {
+        log.info("api : {}", request.getRequestURI());
+        log.info("touchPushReqDTO : {}", touchPushReqDTO);
+
+        actionHistService.createHist(null, "push", touchPushReqDTO.getPushType());
 
         return ResponseEntity.ok().build();
     }
