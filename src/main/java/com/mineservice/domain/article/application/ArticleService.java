@@ -218,6 +218,7 @@ public class ArticleService {
                 }
             } else {
                 articleAlarmRepository.delete(articleAlarm);
+                articleEntity.setArticleAlarm(null);
             }
         }
 
@@ -235,6 +236,7 @@ public class ArticleService {
             articleTagRepository.saveAll(articleTagEntityList);
         } else {
             articleTagRepository.deleteByArticleId(articleId);
+            articleEntity.setArticleTag(null);
         }
 
         articleEntity.setModifyBy(userId);

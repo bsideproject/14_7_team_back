@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "action_hist")
 public class ActionHistEntity {
