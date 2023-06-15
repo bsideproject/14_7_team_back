@@ -18,7 +18,6 @@ public class SlackNotiService {
     @Value("${slack-web-hook-url}")
     private String slackNotiUrl;
 
-    @Async
     public void sendSlackNotify(String title, String msg) {
         RestTemplate rt = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

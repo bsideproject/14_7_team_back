@@ -33,7 +33,6 @@ public class SchedulerService {
     private final UserAlarmRepository userAlarmRepository;
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
-    @Async
     public void userAlarm() {
         log.info("userAlarm 실행");
 
@@ -102,7 +101,6 @@ public class SchedulerService {
 
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
-    @Async
     public void articleAlarm() {
         log.info("articleAlarm 실행");
         List<ArticleEntity> findAll = articleRepository.findAll();
