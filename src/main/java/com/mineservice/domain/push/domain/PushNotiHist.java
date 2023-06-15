@@ -1,10 +1,7 @@
 package com.mineservice.domain.push.domain;
 
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,5 +32,13 @@ public class PushNotiHist {
     @Column(name = "create_dt")
     private LocalDateTime createDt;
 
-
+    @Builder
+    public PushNotiHist(Long id, String title, String body, Long successCount, Long failCount, LocalDateTime createDt) {
+        this.id = id;
+        this.title = title;
+        this.body = body;
+        this.successCount = successCount;
+        this.failCount = failCount;
+        this.createDt = createDt;
+    }
 }

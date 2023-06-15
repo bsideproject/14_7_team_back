@@ -33,5 +33,9 @@ public class DeviceTokenService {
         deviceTokenRepository.save(token);
     }
 
+    public Optional<DeviceToken> findByUserId(String userId) {
+        return deviceTokenRepository.findByUserId(userId);
+    }
+
 
 }

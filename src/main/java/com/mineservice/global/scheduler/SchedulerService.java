@@ -3,6 +3,9 @@ package com.mineservice.global.scheduler;
 import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.domain.ArticleEntity;
 import com.mineservice.domain.article.repository.ArticleRepository;
+import com.mineservice.domain.user.domain.UserAlarmEntity;
+import com.mineservice.domain.user.repository.UserAlarmRepository;
+import com.mineservice.global.infra.apns.ApnsService;
 import com.mineservice.global.infra.slack.SlackNotiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +13,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,15 +28,78 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SchedulerService {
 
-    private final SlackNotiService notify;
+    private final ApnsService apnsService;
     private final ArticleRepository articleRepository;
+    private final UserAlarmRepository userAlarmRepository;
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     @Async
     public void userAlarm() {
         log.info("userAlarm 실행");
-//        notify.sendSlackNotify("사용자 푸시 발송", 0 + "개 발송");
+
+        DayOfWeek dayOfWeek = LocalDateTime.now().getDayOfWeek();
+        String today = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+
+        LocalTime min = LocalTime.now().minusMinutes(1).withSecond(59).withNano(0);
+        LocalTime max = LocalTime.now().plusMinutes(1).withSecond(0).withNano(0);
+
+        List<UserAlarmEntity> userAlarmEntityList = userAlarmRepository.findAllByNotiYn("Y")
+                .stream()
+                .filter(ua -> ua.getTime().isAfter(min) && ua.getTime().isBefore(max))
+                .collect(Collectors.toList());
+        log.info("알림설정 유저수 : {}", userAlarmEntityList.size());
+
+        List<String> userIdList = filter(today, userAlarmEntityList);
+        log.info("filtered size : {}", userIdList.size());
+        if (!userIdList.isEmpty()) {
+            apnsService.sendUserPush(userIdList);
+        }
     }
+
+    public List<String> filter(String today, List<UserAlarmEntity> list) {
+        switch (today) {
+            case "월":
+                return list.stream()
+                        .filter(ua -> ua.getFrequency().contains("월") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("평일"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            case "화":
+                return list.stream()
+                        .filter(ua -> ua.getFrequency().contains("화") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("평일"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            case "수":
+                return list.stream()
+                        .filter(ua -> ua.getFrequency().contains("수") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("평일"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            case "목":
+                return list.stream()
+                        .filter(ua -> ua.getFrequency().contains("목") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("평일"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            case "금":
+                return list.stream()
+                        .filter(ua -> ua.getFrequency().contains("금") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("평일"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            case "토":
+                return list.stream()
+                        .filter(ua -> ua.getFrequency().contains("토") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("주말"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            case "일":
+                return list.stream()
+                        .filter(ua -> Arrays.asList(ua.getFrequency().split(",")).contains("일") || ua.getFrequency().equals("매일") || ua.getFrequency().equals("주말"))
+                        .map(UserAlarmEntity::getUserId)
+                        .collect(Collectors.toList());
+            default:
+                return new ArrayList<>();
+        }
+
+
+    }
+
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     @Async
@@ -35,13 +107,18 @@ public class SchedulerService {
         log.info("articleAlarm 실행");
         List<ArticleEntity> findAll = articleRepository.findAll();
         log.info("findAllSize : {}", findAll.size());
-        List<ArticleEntity> useAlarm = findAll.stream().filter(a -> a.getArticleAlarm() != null).collect(Collectors.toList());
-        log.info("useAlarmSize : {}", useAlarm.size());
-        List<ArticleEntity> nowAlarm = useAlarm.stream().filter(a -> a.getArticleAlarm().getTime().equals(LocalDateTime.now())).collect(Collectors.toList());
+
+        LocalDateTime min = LocalDateTime.now().minusMinutes(1).withSecond(59).withNano(0);
+        LocalDateTime max = LocalDateTime.now().plusMinutes(1).withSecond(0).withNano(0);
+
+        List<ArticleEntity> nowAlarm = findAll.stream()
+                .filter(a -> a.getArticleAlarm() != null)
+                .filter(a -> a.getArticleAlarm().getTime().isAfter(min) && a.getArticleAlarm().getTime().isBefore(max))
+                .collect(Collectors.toList());
         log.info("nowAlarmSize : {}", nowAlarm.size());
 
         if (!nowAlarm.isEmpty()) {
-            notify.sendSlackNotify("아티클 푸시 발송", nowAlarm.size() + "개 발송");
+            apnsService.sendArticlePush(nowAlarm);
         }
 
     }

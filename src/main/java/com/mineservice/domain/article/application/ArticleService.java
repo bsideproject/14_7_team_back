@@ -101,6 +101,11 @@ public class ArticleService {
         log.info("articleAlarm {}", articleAlarm.toString());
     }
 
+    public List<ArticleEntity> findAllByUserId(String userId) {
+        return articleRepository.findAllByUserId(userId);
+    }
+
+
     public ArticleResDTO findAllBySearch(String title, boolean favorite, boolean readYn, List<String> types, List<String> tags, String userId, Pageable pageable) {
         String favoriteStr = favorite ? "Y" : null;
         String readYnStr = readYn ? "N" : null;

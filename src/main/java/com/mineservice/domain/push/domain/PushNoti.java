@@ -1,10 +1,7 @@
 package com.mineservice.domain.push.domain;
 
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,4 +35,13 @@ public class PushNoti {
     @Column(name = "created_dt")
     private LocalDateTime createdDt;
 
+    @Builder
+    public PushNoti(Long id, String userId, Long articleId, String readYn, LocalDate createdDate, LocalDateTime createdDt) {
+        this.id = id;
+        this.userId = userId;
+        this.articleId = articleId;
+        this.readYn = readYn;
+        this.createdDate = createdDate;
+        this.createdDt = createdDt;
+    }
 }
