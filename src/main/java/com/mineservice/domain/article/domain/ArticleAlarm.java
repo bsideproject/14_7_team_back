@@ -32,9 +32,11 @@ public class ArticleAlarm {
     private LocalDateTime createDt;
 
     @Builder
-    public ArticleAlarm(Long articleId, LocalDateTime time, String createBy, LocalDateTime createDt) {
+    public ArticleAlarm(Long articleId, LocalDateTime time,String modifyBy,LocalDateTime modifyDt, String createBy, LocalDateTime createDt) {
         this.articleId = articleId;
         this.time = time;
+        this.modifyBy = modifyBy;
+        this.modifyDt = modifyDt;
         this.createBy = createBy;
         this.createDt = createDt;
     }

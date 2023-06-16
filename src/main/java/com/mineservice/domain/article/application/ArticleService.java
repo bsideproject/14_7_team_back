@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,8 @@ public class ArticleService {
     public void createArticleAlarm(Long articleId, LocalDateTime alarmTime) {
         ArticleAlarm articleAlarm = ArticleAlarm.builder()
                 .articleId(articleId)
-                .time(alarmTime)
+                .time(alarmTime.atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .createDt(LocalDateTime.now())
                 .build();
         articleAlarmRepository.save(articleAlarm);
         log.info("articleAlarm {}", articleAlarm.toString());
@@ -174,7 +176,7 @@ public class ArticleService {
         Boolean favorite = dto.getFavorite();
         Boolean read = dto.getRead();
         Boolean alarm = dto.getAlarm();
-        LocalDateTime alarmTime = dto.getAlarmTime();
+        LocalDateTime alarmTime = dto.getAlarmTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
         List<String> tags = dto.getTags();
 
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
@@ -212,6 +214,8 @@ public class ArticleService {
                     articleAlarmRepository.save(ArticleAlarm.builder()
                             .articleId(articleId)
                             .time(alarmTime.withNano(0))
+                            .modifyBy(userId)
+                            .modifyDt(LocalDateTime.now())
                             .build());
                 } else {
                     articleAlarmRepository.save(ArticleAlarm.builder()
