@@ -172,12 +172,6 @@ public class ArticleService {
     @Transactional
     public void modifyArticle(ArticleModDTO dto, String userId) {
         Long articleId = dto.getArticleId();
-        String title = dto.getTitle();
-        Boolean favorite = dto.getFavorite();
-        Boolean read = dto.getRead();
-        Boolean alarm = dto.getAlarm();
-        LocalDateTime alarmTime = dto.getAlarmTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
-        List<String> tags = dto.getTags();
 
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(articleId, userId);
         if (optionalArticle.isEmpty()) {
@@ -187,29 +181,30 @@ public class ArticleService {
 
         ArticleEntity articleEntity = optionalArticle.get();
 
-        if (title != null) {
-            articleEntity.setTitle(title);
+        if (dto.getTitle() != null) {
+            articleEntity.setTitle(dto.getTitle());
         }
 
-        if (favorite != null) {
-            if (Boolean.TRUE.equals(favorite)) {
+        if (dto.getFavorite() != null) {
+            if (Boolean.TRUE.equals(dto.getFavorite())) {
                 articleEntity.setFavorite("Y");
             } else {
                 articleEntity.setFavorite("N");
             }
         }
 
-        if (read != null) {
-            if (Boolean.TRUE.equals(read)) {
+        if (dto.getRead() != null) {
+            if (Boolean.TRUE.equals(dto.getRead())) {
                 articleEntity.setReadYn("Y");
             } else {
                 articleEntity.setReadYn("N");
             }
         }
 
-        if (alarm != null) {
+        if (dto.getAlarm() != null) {
             ArticleAlarm articleAlarm = articleEntity.getArticleAlarm();
-            if (Boolean.TRUE.equals(alarm)) {
+            if (Boolean.TRUE.equals(dto.getAlarm())) {
+                LocalDateTime alarmTime = dto.getAlarmTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
                 if (articleAlarm != null) {
                     articleAlarmRepository.save(ArticleAlarm.builder()
                             .articleId(articleId)
@@ -231,10 +226,10 @@ public class ArticleService {
             }
         }
 
-        if (tags != null && !tags.isEmpty()) {
+        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             articleTagRepository.deleteByArticleId(articleId);
             List<ArticleTagEntity> articleTagEntityList = new ArrayList<>();
-            for (String tagName : tags) {
+            for (String tagName : dto.getTags()) {
                 TagEntity tagEntity = tagService.createTagByArticle(userId, tagName);
                 articleTagEntityList.add(ArticleTagEntity.builder()
                         .article(articleEntity)
