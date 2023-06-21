@@ -165,7 +165,7 @@ public class ApnsService {
 
         try {
             ApnsClient apnsClient = new ApnsClientBuilder()
-                    .setApnsServer(ApnsClientBuilder.DEVELOPMENT_APNS_HOST)
+                    .setApnsServer(ApnsClientBuilder.PRODUCTION_APNS_HOST)
                     .setClientCredentials(resource.getFile(), "")
                     .build();
 
