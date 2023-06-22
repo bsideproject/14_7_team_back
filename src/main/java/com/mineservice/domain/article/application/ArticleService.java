@@ -22,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +98,7 @@ public class ArticleService {
     public void createArticleAlarm(Long articleId, LocalDateTime alarmTime) {
         ArticleAlarm articleAlarm = ArticleAlarm.builder()
                 .articleId(articleId)
-                .time(alarmTime.atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .time(alarmTime.plusHours(9))
                 .createDt(LocalDateTime.now())
                 .build();
         articleAlarmRepository.save(articleAlarm);
@@ -204,7 +206,7 @@ public class ArticleService {
         if (dto.getAlarm() != null) {
             ArticleAlarm articleAlarm = articleEntity.getArticleAlarm();
             if (Boolean.TRUE.equals(dto.getAlarm())) {
-                LocalDateTime alarmTime = dto.getAlarmTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+                LocalDateTime alarmTime = dto.getAlarmTime().plusHours(9);
                 if (articleAlarm != null) {
                     articleAlarmRepository.save(ArticleAlarm.builder()
                             .articleId(articleId)

@@ -141,7 +141,7 @@ public class ApnsService {
 
             if (sendPush(deviceToken.getToken(), payload)) {
                 pushNotiRepository.save(PushNoti.builder()
-                        .userId(userInfoEntity.getEntityUserName())
+                        .userId(userInfoEntity.getId())
                         .articleId(article.getId())
                         .readYn("N")
                         .createdDate(LocalDate.now())
