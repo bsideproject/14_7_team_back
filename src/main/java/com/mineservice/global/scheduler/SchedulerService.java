@@ -1,15 +1,12 @@
 package com.mineservice.global.scheduler;
 
-import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.article.domain.ArticleEntity;
 import com.mineservice.domain.article.repository.ArticleRepository;
 import com.mineservice.domain.user.domain.UserAlarmEntity;
 import com.mineservice.domain.user.repository.UserAlarmRepository;
 import com.mineservice.global.infra.apns.ApnsService;
-import com.mineservice.global.infra.slack.SlackNotiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -46,10 +43,8 @@ public class SchedulerService {
                 .stream()
                 .filter(ua -> ua.getTime().isAfter(min) && ua.getTime().isBefore(max))
                 .collect(Collectors.toList());
-        log.info("알림설정 유저수 : {}", userAlarmEntityList.size());
 
         List<String> userIdList = filter(today, userAlarmEntityList);
-        log.info("filtered size : {}", userIdList.size());
         if (!userIdList.isEmpty()) {
             apnsService.sendUserPush(userIdList);
         }
@@ -104,7 +99,6 @@ public class SchedulerService {
     public void articleAlarm() {
         log.info("articleAlarm 실행");
         List<ArticleEntity> findAll = articleRepository.findAll();
-        log.info("findAllSize : {}", findAll.size());
 
         LocalDateTime min = LocalDateTime.now().minusMinutes(1).withSecond(59).withNano(0);
         LocalDateTime max = LocalDateTime.now().plusMinutes(1).withSecond(0).withNano(0);
@@ -113,7 +107,6 @@ public class SchedulerService {
                 .filter(a -> a.getArticleAlarm() != null)
                 .filter(a -> a.getArticleAlarm().getTime().isAfter(min) && a.getArticleAlarm().getTime().isBefore(max))
                 .collect(Collectors.toList());
-        log.info("nowAlarmSize : {}", nowAlarm.size());
 
         if (!nowAlarm.isEmpty()) {
             apnsService.sendArticlePush(nowAlarm);

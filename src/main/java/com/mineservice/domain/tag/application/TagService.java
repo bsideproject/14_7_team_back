@@ -42,7 +42,7 @@ public class TagService {
 
     @Transactional
     public void deleteTagByUserId(String userId) {
-        List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
+        List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId).stream().distinct().collect(Collectors.toList());
 
         for (TagEntity tagEntity : tagEntityList) {
             List<ArticleTagEntity> articleTagList = articleTagRepository.findAllByTagId(tagEntity.getId());
@@ -59,7 +59,7 @@ public class TagService {
 
     public List<String> findAllTagNameByUserId(String userId) {
         List<TagEntity> tagEntityList = tagRepository.findAllByUserId(userId);
-        return tagEntityList.stream().map(TagEntity::getName).collect(Collectors.toList());
+        return tagEntityList.stream().map(TagEntity::getName).distinct().collect(Collectors.toList());
     }
 
     public TagResDTO findAllTagName(Long articleId, String userId) {

@@ -26,7 +26,7 @@ public class PushNotiService {
 
 
     public List<PushNotiResDTO> findAllByUserId(String userId) {
-        List<PushNoti> notiList = pushNotiRepository.findAllByUserId(userId);
+        List<PushNoti> notiList = pushNotiRepository.findAllByUserIdOrderByIdDesc(userId);
         notiList = notiList.stream()
                 .filter(noti -> noti.getCreatedDate().isAfter(LocalDate.now().minusDays(30)))
                 .collect(Collectors.toList());

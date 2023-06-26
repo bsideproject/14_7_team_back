@@ -14,12 +14,18 @@ public interface TagRepository extends JpaRepository<TagEntity, Long> {
 
     Optional<TagEntity> findByUserIdAndName(String userId, String tagName);
 
-    List<TagEntity> findAllByUserId(String userId);
+    @Query(value = "SELECT t.* " +
+            "FROM tag t " +
+            "LEFT JOIN article_tag artag ON artag.tag_id = t.id " +
+            "WHERE t.user_id = :userId " +
+            "ORDER BY artag.tag_id DESC", nativeQuery = true)
+    List<TagEntity> findAllByUserId(@Param("userId") String userId);
 
     @Query(value = "SELECT t.* " +
             "FROM tag t " +
-            "LEFT JOIN article_tag at ON at.tag_id = t.id " +
-            "LEFT JOIN article a ON at.article_id = a.id " +
-            "WHERE a.id = :articleId ", nativeQuery = true)
+            "LEFT JOIN article_tag artag ON artag.tag_id = t.id " +
+            "LEFT JOIN article a ON artag.article_id = a.id " +
+            "WHERE a.id = :articleId " +
+            "ORDER BY artag.tag_id DESC", nativeQuery = true)
     List<TagEntity> findAllByArticleId(@Param("articleId") Long articleId);
 }

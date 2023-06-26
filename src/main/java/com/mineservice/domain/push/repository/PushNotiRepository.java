@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PushNotiRepository extends JpaRepository<PushNoti, Long> {
 
-    List<PushNoti> findAllByUserId(String userId);
+    List<PushNoti> findAllByUserIdOrderByIdDesc(String userId);
 
     void deleteAllByUserId(String userId);
 

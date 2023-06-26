@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,8 +48,7 @@ public class ApnsService {
         int success = 0;
         int fail = 0;
 
-        for (int i = 0; i < userIdList.size(); i++) {
-            String userId = userIdList.get(i);
+        for (String userId : userIdList) {
             log.info("userId : {}", userId);
             List<ArticleEntity> articleList = articleService.findAllByUserId(userId);
             List<ArticleEntity> unreadList = articleList.stream().filter(ar -> ar.getReadYn().equals("N")).collect(Collectors.toList());
@@ -58,8 +56,6 @@ public class ApnsService {
                 log.info("미확인 콘텐츠 없음");
                 continue;
             }
-
-            ArticleEntity latestArticle = unreadList.stream().max(Comparator.comparing(ArticleEntity::getCreateDt)).get();
 
             Optional<DeviceToken> optionalDeviceToken = deviceTokenService.findByUserId(userId);
             if (optionalDeviceToken.isEmpty()) {
@@ -69,20 +65,11 @@ public class ApnsService {
 
             DeviceToken deviceToken = optionalDeviceToken.get();
 
-            String payload = "";
-            if (i % 2 == 0) {
-                payload = new SimpleApnsPayloadBuilder()
-                        .setAlertTitle(String.format("마인에서 %s개의 콘텐츠를 확인하세요", unreadList.size()))
-                        .setAlertBody(latestArticle.getTitle())
-                        .addCustomProperty("pushType", "user1")
-                        .build();
-            } else {
-                payload = new SimpleApnsPayloadBuilder()
-                        .setAlertTitle(String.format("%s님, 마인할 시간이예요!", articleList.size()))
-                        .setAlertBody(String.format("마인에서 %s개의 콘텐츠를 확인해 보세요", unreadList.size()))
-                        .addCustomProperty("pushType", "user2")
-                        .build();
-            }
+            String payload = new SimpleApnsPayloadBuilder()
+                    .setAlertTitle(String.format("%s님, 마인할 시간이예요!", articleList.size()))
+                    .setAlertBody(String.format("마인에서 %s개의 콘텐츠를 확인해 보세요", unreadList.size()))
+                    .addCustomProperty("pushType", "user2")
+                    .build();
 
             if (sendPush(deviceToken.getToken(), payload)) {
                 success++;
@@ -91,9 +78,14 @@ public class ApnsService {
             }
         }
 
+        if (success + fail == 0) {
+            log.info("푸시 대상이 없습니다");
+            return;
+        }
+
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("[yyyy-MM-dd HH:mm]"));
         notify.sendSlackNotify(now + "유저 푸시 발송", String.format("총 발송 : %s / 성공 : %s / 실패 : %s", success + fail, success, fail));
-        log.info("{} 유저 푸시 발송 [Total : {} / Success : {} / Fail : {}", now, success + fail, success, fail);
+        log.info("{} 유저 푸시 발송 [Total : {} / Success : {} / Fail : {}]", now, success + fail, success, fail);
     }
 
     public void sendArticlePush(List<ArticleEntity> articleList) {
@@ -101,8 +93,7 @@ public class ApnsService {
         int success = 0;
         int fail = 0;
 
-        for (int i = 0; i < articleList.size(); i++) {
-            ArticleEntity article = articleList.get(i);
+        for (ArticleEntity article : articleList) {
             log.info("articleId : {}", article.getId());
 
             Optional<UserInfoEntity> optionalUserInfo = userInfoService.findById(article.getUserId());
@@ -121,23 +112,12 @@ public class ApnsService {
 
             DeviceToken deviceToken = optionalDeviceToken.get();
 
-            String payload = "";
-
-//            if (i % 2 == 0) {
-//                payload = new SimpleApnsPayloadBuilder()
-//                        .setAlertTitle(article.getTitle())
-////                    .setAlertBody(article.get)
-//                        .addCustomProperty("pushType", "article1")
-//                        .addCustomProperty("articleId", article.getId())
-//                        .build();
-//            } else {
-            payload = new SimpleApnsPayloadBuilder()
+            String payload = new SimpleApnsPayloadBuilder()
                     .setAlertTitle(String.format("%s님, 마인에서 챙겨드려요", userInfoEntity.getEntityUserName()))
                     .setAlertBody(article.getTitle())
                     .addCustomProperty("pushType", "article2")
                     .addCustomProperty("articleId", article.getId())
                     .build();
-//            }
 
             if (sendPush(deviceToken.getToken(), payload)) {
                 pushNotiRepository.save(PushNoti.builder()
@@ -152,12 +132,16 @@ public class ApnsService {
             } else {
                 fail++;
             }
+        }
 
+        if (success + fail == 0) {
+            log.info("푸시 대상이 없습니다");
+            return;
         }
 
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("[yyyy-MM-dd HH:mm]"));
         notify.sendSlackNotify(now + "아티클 푸시 발송", String.format("총 발송 : %s / 성공 : %s / 실패 : %s", success + fail, success, fail));
-        log.info("{} 아티클 푸시 발송 [Total : {} / Success : {} / Fail : {}", now, success + fail, success, fail);
+        log.info("{} 아티클 푸시 발송 [Total : {} / Success : {} / Fail : {}]", now, success + fail, success, fail);
     }
 
 

@@ -223,8 +223,10 @@ public class ArticleService {
                             .build());
                 }
             } else {
-                articleAlarmRepository.delete(articleAlarm);
-                articleEntity.setArticleAlarm(null);
+                if (articleAlarm != null) {
+                    articleAlarmRepository.delete(articleAlarm);
+                    articleEntity.setArticleAlarm(null);
+                }
             }
         }
 
