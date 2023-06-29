@@ -77,6 +77,11 @@ public class ArticleController {
         log.info("api : {}", request.getRequestURI());
         log.info("article search page: {}", page);
 
+        if (user == null) {
+            ArticleResDTO empty = articleService.findAllBySearch(null, false, false, null, null, null, PageRequest.of(page, 10));
+            return ResponseEntity.ok(empty);
+        }
+
         String userId = user.getUsername();
 
         PageRequest pageRequest = PageRequest.of(page, 10).withSort("asc".equals(sort) ? Sort.Direction.ASC : Sort.Direction.DESC, "create_dt");

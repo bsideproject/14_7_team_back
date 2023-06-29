@@ -50,6 +50,15 @@ public class ApnsService {
 
         for (String userId : userIdList) {
             log.info("userId : {}", userId);
+
+            Optional<UserInfoEntity> optionalUserInfo = userInfoService.findById(userId);
+            if (optionalUserInfo.isEmpty()) {
+                log.info("userInfo 없음");
+                continue;
+            }
+
+            UserInfoEntity userInfoEntity = optionalUserInfo.get();
+
             List<ArticleEntity> articleList = articleService.findAllByUserId(userId);
             List<ArticleEntity> unreadList = articleList.stream().filter(ar -> ar.getReadYn().equals("N")).collect(Collectors.toList());
             if (unreadList.isEmpty()) {
@@ -66,7 +75,7 @@ public class ApnsService {
             DeviceToken deviceToken = optionalDeviceToken.get();
 
             String payload = new SimpleApnsPayloadBuilder()
-                    .setAlertTitle(String.format("%s님, 마인할 시간이예요!", articleList.size()))
+                    .setAlertTitle(String.format("%s님, 마인할 시간이예요!", userInfoEntity.getEntityUserName()))
                     .setAlertBody(String.format("마인에서 %s개의 콘텐츠를 확인해 보세요", unreadList.size()))
                     .addCustomProperty("pushType", "user2")
                     .build();
@@ -173,7 +182,7 @@ public class ApnsService {
             }
         } catch (Exception e) {
             log.error("Push 실패");
-            e.printStackTrace();
+            log.error(e.getMessage());
             return false;
         }
 
