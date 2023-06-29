@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +32,10 @@ public class PushNotiService {
                 .filter(noti -> noti.getCreatedDate().isAfter(LocalDate.now().minusDays(30)))
                 .collect(Collectors.toList());
 
-        List<PushNotiResDTO> dtoList = notiList.stream().map(noti -> toDTO(noti, userId)).collect(Collectors.toList());
+        List<PushNotiResDTO> dtoList = notiList.stream()
+                .map(noti -> toDTO(noti, userId))
+                .filter(dto -> dto.getArticleUrl() != null)
+                .collect(Collectors.toList());
 
         notiList.forEach(noti -> noti.setReadYn("Y"));
         pushNotiRepository.saveAll(notiList);
@@ -42,7 +46,7 @@ public class PushNotiService {
     private PushNotiResDTO toDTO(PushNoti pushNoti, String userId) {
         Optional<ArticleEntity> optionalArticle = articleRepository.findArticleByIdAndUserId(pushNoti.getArticleId(), userId);
         if (optionalArticle.isEmpty()) {
-            return null;
+            return PushNotiResDTO.builder().build();
         }
         ArticleEntity article = optionalArticle.get();
         return PushNotiResDTO.builder()
