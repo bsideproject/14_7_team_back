@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,6 +34,10 @@ public class PushNotiController {
     public ResponseEntity<List<PushNotiResDTO>> getNotiList(@ApiIgnore @AuthenticationPrincipal UserDetails user,
                                                             HttpServletRequest request) {
         log.info("api : {}", request.getRequestURI());
+        if (user == null) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+
         log.info("userId : {}", user.getUsername());
         String userId = user.getUsername();
 

@@ -78,7 +78,7 @@ public class ArticleController {
         log.info("article search page: {}", page);
 
         if (user == null) {
-            ArticleResDTO empty = articleService.findAllBySearch(null, false, false, null, null, null, PageRequest.of(page, 10));
+            ArticleResDTO empty = articleService.findEmptyList();
             return ResponseEntity.ok(empty);
         }
 

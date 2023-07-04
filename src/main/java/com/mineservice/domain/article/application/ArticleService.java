@@ -25,9 +25,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalField;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -122,6 +120,26 @@ public class ArticleService {
                 .totalArticleSize(articleDTOPage.getTotalElements())
                 .totalPageSize(articleDTOPage.getTotalPages())
                 .articleList(articleDTOPage.getContent())
+                .build();
+    }
+
+    public ArticleResDTO findEmptyList() {
+
+        ArticleDTO articleDTO = ArticleDTO.builder()
+                .articleId(0L)
+                .title("마인이 처음이신가요?")
+                .type("article")
+                .favorite(false)
+                .read(false)
+                .alarm(false)
+                .url("https://minedirectory.notion.site/MINE-af9c2a22b5904d60b103f2242ad8ebde")
+                .tagNames(Arrays.asList("이용방법", "환영합니다"))
+                .build();
+
+        return ArticleResDTO.builder()
+                .totalArticleSize(1L)
+                .totalPageSize(1)
+                .articleList(Collections.singletonList(articleDTO))
                 .build();
     }
 
