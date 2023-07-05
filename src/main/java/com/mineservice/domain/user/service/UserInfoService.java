@@ -50,6 +50,7 @@ public class UserInfoService {
         UserDetailDTO detailDTO = new UserDetailDTO();
         detailDTO.setUserId(userInfoEntity.getId());
         detailDTO.setUserName(userInfoEntity.getEntityUserName());
+        detailDTO.setUserEmail(userInfoEntity.getUserEmail());
         detailDTO.setTotalArticleSize(userInfoEntity.getArticle().size());
 
         UserAlarmEntity userAlarm = userInfoEntity.getUserAlarm();

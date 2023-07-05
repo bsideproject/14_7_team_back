@@ -121,7 +121,11 @@ public class AppleLoginController {
             userInfo.setEmail(payload.getAsString("email"));
             userInfo.setAccessTokenExpireDate(expirationDateTime);
             userInfo.setProvider("apple");
-            userInfo.setName(userName);
+            if (userName == null || " ".equals(userName) || "".equals(userName.trim())) {
+                userInfo.setName("유저");
+            } else {
+                userInfo.setName(userName);
+            }
 
             userInfoService.joinUser(userId, userInfo);
         } else {//이미 회원일 경우

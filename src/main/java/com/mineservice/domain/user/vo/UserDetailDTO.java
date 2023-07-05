@@ -19,6 +19,8 @@ public class UserDetailDTO {
     private String userId;
     @Schema(name = "사용자명")
     private String userName;
+    @Schema(name = "사용자 이메일")
+    private String userEmail;
     @Schema(name = "전체 아티클 개수")
     private int totalArticleSize;
     @Schema(name = "알람여부 (true : on | false : off)")
