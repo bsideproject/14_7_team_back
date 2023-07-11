@@ -31,25 +31,24 @@ import javax.servlet.http.HttpServletRequest;
 @ApiIgnore
 public class ServerErrorController implements ErrorController {
 
-    @RequestMapping("/errors")
+    @RequestMapping("/error")
     public String handleError(HttpServletRequest request) {
 
         String orgUri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
-
+        log.error("orgUri : {}", orgUri);
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         Exception e = (Exception) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
         if (e != null) {
+            log.error(e.getMessage());
         }
 
         if ("404".equals(status.toString())) {
-            return "view/error/404";
-        } else if ("403".equals(status.toString())) {
-            return "view/error/403";
+            return "/view/error/404.html";
         } else if ("500".equals(status.toString())) {
-            return "view/error/500";
+            return "/view/error/500.html";
         }
 
-        return "view/error/error";
+        return "/view/error/error.html";
     }
 }

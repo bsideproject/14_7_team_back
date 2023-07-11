@@ -48,3 +48,7 @@ logging:
     org:
       hibernate:
         SQL: info
+server:
+  error:
+    whitelabel:
+      enabled: false
