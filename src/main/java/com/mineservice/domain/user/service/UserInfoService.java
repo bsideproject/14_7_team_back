@@ -1,5 +1,6 @@
 package com.mineservice.domain.user.service;
 
+import com.mineservice.domain.action.application.ActionHistService;
 import com.mineservice.domain.article.application.ArticleService;
 import com.mineservice.domain.push.repository.DeviceTokenRepository;
 import com.mineservice.domain.push.repository.PushNotiRepository;
@@ -35,6 +36,7 @@ public class UserInfoService {
     private final PushNotiRepository pushNotiRepository;
     private final MineKeyRepository mineKeyRepository;
     private final ReasonRepository reasonRepository;
+    private final ActionHistService actionHistService;
 
     private static final List<DayType> WEEK_DAY_LIST = Arrays.asList(DayType.MON, DayType.TUE, DayType.WED, DayType.THU, DayType.FRI);
     private static final List<DayType> WEEKEND_LIST = Arrays.asList(DayType.SAT, DayType.SUN);
@@ -164,6 +166,9 @@ public class UserInfoService {
                 .build();
 
         UserInfoEntity user = userInfoRepository.save(entity);
+
+        actionHistService.createHist(user.getId(), "joinUser", user.getProvider());
+
         return user;
     }
 

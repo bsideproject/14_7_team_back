@@ -39,7 +39,7 @@ public class ArticleService {
     private final ArticleAlarmRepository articleAlarmRepository;
 
     @Transactional
-    public void createArticle(String userId, ArticleReqDTO articleReqDTO) {
+    public String createArticle(String userId, ArticleReqDTO articleReqDTO) {
         String articleType = getArticleType(articleReqDTO.getUrl());
         if ("image".equals(articleType)) {
             if (articleReqDTO.getTitle() == null) {
@@ -90,6 +90,7 @@ public class ArticleService {
         }
 
         articleTagRepository.saveAll(articleTagEntityList);
+        return articleType;
     }
 
     @Transactional

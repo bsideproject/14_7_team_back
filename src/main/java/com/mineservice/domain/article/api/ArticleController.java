@@ -29,8 +29,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleController {
 
-    private final ArticleService articleService;
-    private final TagService tagService;
+    private final ArticleService    articleService;
+    private final TagService        tagService;
     private final ActionHistService actionHistService;
 
     @PostMapping(value = "/articles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -48,8 +48,9 @@ public class ArticleController {
         String userId = user.getUsername();
         log.info("userId :{}", userId);
 
-        articleService.createArticle(userId, reqDTO);
-        actionHistService.createHist(userId, "registerArticle", reqDTO.getRegType());
+        String articleType = articleService.createArticle(userId, reqDTO);
+        actionHistService.createHist(userId, "regType", reqDTO.getRegType());
+        actionHistService.createHist(userId, "articleType", articleType);
 
         return ResponseEntity.ok().build();
     }
