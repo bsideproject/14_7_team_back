@@ -42,6 +42,7 @@ public class NaverLoginController {
 
         String userId;
         List<String> roles;
+        String type = "";
         if (userEntity == null) { //최초 로그인 (회원가입)
             userId = "user_" + UUID.randomUUID().toString();
             log.info("회원가입 userId : {}", userId);
@@ -49,6 +50,7 @@ public class NaverLoginController {
             roles = Collections.singletonList("ROLE_USER");
 
             userInfoService.joinUser(userId, userInfo);
+            type = "join";
         } else {//이미 회원일 경우
             log.info("findByIdAndProvider : {}", userEntity.toString());
             userId = userEntity.getId();
@@ -58,12 +60,14 @@ public class NaverLoginController {
             userInfoService.memberLogin(userEntity);
             accessTokenService.updateAccessTokenByMemberLogin(userId, userInfo);
             refreshTokenService.updateRefreshTokenByMemberLogin(userId, userInfo);
+            type = "re-login";
         }
 
         String jwt = jwtTokenProvider.generateJwt(userId, roles);
         log.info("created JWT Token : {}", jwt);
         ResponseJwt responseJwt = new ResponseJwt();
         responseJwt.setAccessToken(jwt);
+        responseJwt.setType(type);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseJwt);
     }
